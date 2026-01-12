@@ -40,6 +40,32 @@ class LottoBall extends HTMLElement {
 
 customElements.define('lotto-ball', LottoBall);
 
+// Theme Toggle Logic
+const themeToggleBtn = document.getElementById('theme-toggle');
+const body = document.body;
+
+// Check for saved theme preference or system preference
+const savedTheme = localStorage.getItem('theme');
+const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+    body.setAttribute('data-theme', 'dark');
+    themeToggleBtn.textContent = '☀️';
+}
+
+themeToggleBtn.addEventListener('click', () => {
+    const currentTheme = body.getAttribute('data-theme');
+    if (currentTheme === 'dark') {
+        body.removeAttribute('data-theme');
+        themeToggleBtn.textContent = '🌙';
+        localStorage.setItem('theme', 'light');
+    } else {
+        body.setAttribute('data-theme', 'dark');
+        themeToggleBtn.textContent = '☀️';
+        localStorage.setItem('theme', 'dark');
+    }
+});
+
 document.getElementById('generate-btn').addEventListener('click', () => {
     const lottoNumbersContainer = document.getElementById('lotto-numbers');
     lottoNumbersContainer.innerHTML = '';

@@ -14,6 +14,7 @@ This project is a simple web application that generates and displays random lott
 
 ## Current Plan
 
+*   **Dark/Light Mode:** Implement a toggle to switch between dark and light themes, persisting the user's preference.
 *   **HTML:** Create the main structure with a container for the lottery numbers and a "Generate" button.
 *   **CSS:** Style the page with a modern and clean aesthetic, including styles for the lottery balls and the overall layout.
 *   **JavaScript:** Implement the logic for generating the random numbers and updating the display. Create a custom element `<lotto-ball>` to represent each number.
