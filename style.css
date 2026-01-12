@@ -2,24 +2,28 @@
     --bg-color: #f0f0f0;
     --container-bg: white;
     --text-color: #333;
+    --subtitle-color: #666;
     --shadow-color: rgba(0, 0, 0, 0.1);
-    --btn-bg: #4CAF50;
-    --btn-hover: #45a049;
+    --btn-bg: #FF5722; /* Changed to an appetizing orange */
+    --btn-hover: #E64A19;
     --btn-text: white;
+    --highlight-color: #FF5722;
 }
 
 [data-theme="dark"] {
     --bg-color: #121212;
     --container-bg: #1e1e1e;
     --text-color: #e0e0e0;
+    --subtitle-color: #aaa;
     --shadow-color: rgba(0, 0, 0, 0.5);
-    --btn-bg: #388e3c;
-    --btn-hover: #2e7d32;
+    --btn-bg: #D84315;
+    --btn-hover: #BF360C;
     --btn-text: #e0e0e0;
+    --highlight-color: #FF8A65;
 }
 
 body {
-    font-family: sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
     display: flex;
@@ -33,47 +37,67 @@ body {
 .container {
     text-align: center;
     background-color: var(--container-bg);
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px var(--shadow-color);
+    padding: 3rem 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px var(--shadow-color);
     transition: background-color 0.3s, box-shadow 0.3s;
     position: relative;
-    padding-top: 3rem; /* Make room for the toggle button */
+    max-width: 400px;
+    width: 90%;
 }
 
-.lotto-numbers {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
+h1 {
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+}
+
+.subtitle {
+    color: var(--subtitle-color);
     margin-bottom: 2rem;
-    flex-wrap: wrap;
+    font-size: 1rem;
 }
 
-lotto-ball {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
+.menu-display {
+    min-height: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.5rem;
-    color: white;
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+    color: var(--highlight-color);
     font-weight: bold;
+    border: 2px dashed var(--subtitle-color);
+    border-radius: 10px;
+    padding: 1rem;
+    transition: opacity 0.2s ease-in-out;
 }
 
-#generate-btn {
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
+.placeholder {
+    font-size: 1.2rem;
+    color: var(--subtitle-color);
+    font-weight: normal;
+}
+
+#recommend-btn {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
     border: none;
-    border-radius: 5px;
+    border-radius: 50px;
     background-color: var(--btn-bg);
     color: var(--btn-text);
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
+    transition: background-color 0.3s, transform 0.1s;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-#generate-btn:hover {
+#recommend-btn:hover {
     background-color: var(--btn-hover);
+    transform: translateY(-2px);
+}
+
+#recommend-btn:active {
+    transform: translateY(0);
 }
 
 .theme-toggle {

@@ -1,44 +1,21 @@
-
-class LottoBall extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
-    }
-
-    connectedCallback() {
-        const number = this.getAttribute('number');
-        const color = this.getColor(number);
-
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    width: 50px;
-                    height: 50px;
-                    border-radius: 50%;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    font-size: 1.5rem;
-                    color: white;
-                    font-weight: bold;
-                    background-color: ${color};
-                }
-            </style>
-            <div>${number}</div>
-        `;
-    }
-
-    getColor(number) {
-        const num = parseInt(number);
-        if (num <= 10) return '#f44336'; // Red
-        if (num <= 20) return '#4CAF50'; // Green
-        if (num <= 30) return '#2196F3'; // Blue
-        if (num <= 40) return '#ff9800'; // Orange
-        return '#9C27B0'; // Purple
-    }
-}
-
-customElements.define('lotto-ball', LottoBall);
+// Menu Data
+const menus = [
+    // Korean
+    "Kimchi Stew (Kimchi-jjigae)", "Soybean Paste Stew (Doenjang-jjigae)", "Bibimbap", "Bulgogi", "Grilled Pork Belly (Samgyeopsal)", 
+    "Spicy Stir-fried Pork (Jeyuk Bokkeum)", "Ginseng Chicken Soup (Samgyetang)", "Tteokbokki", "Cold Noodles (Naengmyeon)", "Braised Short Ribs (Galbi-jjim)",
+    
+    // Chinese
+    "Jajangmyeon (Black Bean Noodles)", "Jjamppong (Spicy Seafood Noodle Soup)", "Sweet and Sour Pork (Tangsuyuk)", "Fried Rice", "Mapo Tofu", "Dumplings",
+    
+    // Japanese
+    "Sushi", "Sashimi", "Udon", "Ramen", "Pork Cutlet (Tonkatsu)", "Tempura Rice Bowl (Tendon)", "Soba Noodles",
+    
+    // Western
+    "Steak", "Pasta (Carbonara, Tomato, etc.)", "Pizza", "Hamburger", "Salad", "Sandwich", "Fried Chicken",
+    
+    // Others
+    "Pho (Vietnamese Noodles)", "Curry", "Tacos"
+];
 
 // Theme Toggle Logic
 const themeToggleBtn = document.getElementById('theme-toggle');
@@ -66,19 +43,19 @@ themeToggleBtn.addEventListener('click', () => {
     }
 });
 
-document.getElementById('generate-btn').addEventListener('click', () => {
-    const lottoNumbersContainer = document.getElementById('lotto-numbers');
-    lottoNumbersContainer.innerHTML = '';
-    const numbers = new Set();
-    while (numbers.size < 6) {
-        numbers.add(Math.floor(Math.random() * 45) + 1);
-    }
+// Recommendation Logic
+const recommendBtn = document.getElementById('recommend-btn');
+const menuDisplay = document.getElementById('menu-display');
 
-    const sortedNumbers = Array.from(numbers).sort((a, b) => a - b);
-
-    sortedNumbers.forEach(number => {
-        const lottoBall = document.createElement('lotto-ball');
-        lottoBall.setAttribute('number', number);
-        lottoNumbersContainer.appendChild(lottoBall);
-    });
+recommendBtn.addEventListener('click', () => {
+    // Simple animation effect: clear -> wait -> show
+    menuDisplay.style.opacity = '0';
+    
+    setTimeout(() => {
+        const randomIndex = Math.floor(Math.random() * menus.length);
+        const selectedMenu = menus[randomIndex];
+        
+        menuDisplay.innerHTML = `<strong>${selectedMenu}</strong>`;
+        menuDisplay.style.opacity = '1';
+    }, 200);
 });
