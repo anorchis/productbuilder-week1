@@ -42,7 +42,7 @@ const menus = [
     { en: "Soba Noodles", ko: "소바" },
     { en: "Steak", ko: "스테이크" },
     { en: "Pasta", ko: "파스타" },
-    { en: "Pizza", ko: "피자" },
+    { en: "Pizza", ko: "피자", image: "https://cdn.pixabay.com/photo/2017/08/06/06/43/pizza-2589569_1280.jpg" },
     { en: "Hamburger", ko: "햄버거" },
     { en: "Salad", ko: "샐러드" },
     { en: "Sandwich", ko: "샌드위치" },
@@ -122,8 +122,12 @@ recommendBtn.addEventListener('click', () => {
         const randomIndex = Math.floor(Math.random() * menus.length);
         const selectedMenu = menus[randomIndex];
         
-        // Display based on current language
-        menuDisplay.innerHTML = `<strong>${selectedMenu[currentLang]}</strong>`;
+        let content = `<strong>${selectedMenu[currentLang]}</strong>`;
+        if (selectedMenu.image) {
+            content = `<img src="${selectedMenu.image}" alt="${selectedMenu[currentLang]}">` + content;
+        }
+        
+        menuDisplay.innerHTML = content;
         menuDisplay.style.opacity = '1';
     }, 200);
 });

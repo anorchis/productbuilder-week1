@@ -86,8 +86,9 @@ h1 {
 }
 
 .menu-display {
-    min-height: 100px;
+    min-height: 150px; /* Increased height to accommodate images */
     display: flex;
+    flex-direction: column; /* Allow stacking image and text */
     justify-content: center;
     align-items: center;
     margin-bottom: 2rem;
@@ -96,8 +97,17 @@ h1 {
     font-weight: bold;
     border: 2px dashed var(--subtitle-color);
     border-radius: 10px;
-    padding: 1rem;
+    padding: 1.5rem;
     transition: opacity 0.2s ease-in-out;
+    gap: 1rem;
+}
+
+.menu-display img {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px var(--shadow-color);
+    object-fit: cover;
 }
 
 .placeholder {

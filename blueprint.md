@@ -13,6 +13,7 @@ This project is a simple web application that recommends a dinner menu for undec
 *   **Responsive Design:** The layout adapts to different screen sizes.
 *   **Dark/Light Mode:** A toggle to switch between dark and light themes, persisting the user's preference.
 *   **Multi-language Support:** Allows users to switch between English and Korean for a global experience.
+*   **Visual Enhancements:** Displays relevant images for specific menu items (e.g., Pizza) to provide a better user experience.
 
 ## Current Plan
 
