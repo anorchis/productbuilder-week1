@@ -8,15 +8,20 @@
 </head>
 <body>
     <div class="container">
-        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark Mode">
-            🌙
-        </button>
-        <h1>Dinner Menu Recommender</h1>
-        <p class="subtitle">What should I eat today?</p>
-        <div id="menu-display" class="menu-display">
-            <span class="placeholder">Click the button!</span>
+        <div class="controls">
+            <button id="lang-toggle" class="icon-btn" aria-label="Toggle Language">
+                🇺🇸
+            </button>
+            <button id="theme-toggle" class="icon-btn" aria-label="Toggle Dark Mode">
+                🌙
+            </button>
         </div>
-        <button id="recommend-btn">Recommend Menu</button>
+        <h1 data-i18n="title">Dinner Menu Recommender</h1>
+        <p class="subtitle" data-i18n="subtitle">What should I eat today?</p>
+        <div id="menu-display" class="menu-display">
+            <span class="placeholder" data-i18n="placeholder">Click the button!</span>
+        </div>
+        <button id="recommend-btn" data-i18n="button">Recommend Menu</button>
     </div>
     <script src="main.js"></script>
 </body>

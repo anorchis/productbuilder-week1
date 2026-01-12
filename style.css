@@ -4,7 +4,7 @@
     --text-color: #333;
     --subtitle-color: #666;
     --shadow-color: rgba(0, 0, 0, 0.1);
-    --btn-bg: #FF5722; /* Changed to an appetizing orange */
+    --btn-bg: #FF5722;
     --btn-hover: #E64A19;
     --btn-text: white;
     --highlight-color: #FF5722;
@@ -44,6 +44,34 @@ body {
     position: relative;
     max-width: 400px;
     width: 90%;
+}
+
+.controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-color);
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.3s, color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.icon-btn:hover {
+    background-color: var(--shadow-color);
 }
 
 h1 {
@@ -98,25 +126,4 @@ h1 {
 
 #recommend-btn:active {
     transform: translateY(0);
-}
-
-.theme-toggle {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--text-color);
-    padding: 0.5rem;
-    border-radius: 50%;
-    transition: background-color 0.3s, color 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.theme-toggle:hover {
-    background-color: var(--shadow-color);
 }

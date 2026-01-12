@@ -8,14 +8,14 @@ This project is a simple web application that recommends a dinner menu for undec
 
 *   **Menu Recommendation:** Randomly selects a dinner menu from a diverse list of options (Korean, Chinese, Japanese, Western, etc.).
 *   **Visually Appealing Display:** Displays the recommended menu clearly with a simple animation.
+
 *   **Interactive Button:** A button to trigger the recommendation.
 *   **Responsive Design:** The layout adapts to different screen sizes.
 *   **Dark/Light Mode:** A toggle to switch between dark and light themes, persisting the user's preference.
+*   **Multi-language Support:** Allows users to switch between English and Korean for a global experience.
 
 ## Current Plan
 
-*   **Refactor:** Convert the existing Lotto Number Generator into a Dinner Menu Recommender.
-*   **HTML:** Update the title and container to display text instead of balls.
-*   **CSS:** Adjust styles to present the menu name elegantly.
-*   **JavaScript:** Replace the number generation logic with an array of food items and a random selector.
+*   **Internationalization (i18n):** Implement a language toggle to switch UI text and menu data between English and Korean.
+*   **Refactor:** Update data structures to support multiple languages.
 *   **Deployment:** Commit and push the changes to GitHub.
