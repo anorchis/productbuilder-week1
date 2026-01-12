@@ -1,4 +1,3 @@
-
 // Translations
 const translations = {
     en: {
@@ -53,7 +52,8 @@ const menus = [
 ];
 
 // State
-let currentLang = localStorage.getItem('lang') || 'en';
+// Change default to 'ko' if no preference is saved
+let currentLang = localStorage.getItem('lang') || 'ko';
 
 // Elements
 const themeToggleBtn = document.getElementById('theme-toggle');
@@ -109,8 +109,7 @@ themeToggleBtn.addEventListener('click', () => {
 langToggleBtn.addEventListener('click', () => {
     const newLang = currentLang === 'en' ? 'ko' : 'en';
     updateLanguage(newLang);
-    // Reset display if it's showing a menu to avoid confusion, or keep it?
-    // Let's reset to placeholder for clarity
+    // Reset display
     menuDisplay.innerHTML = `<span class="placeholder" data-i18n="placeholder">${translations[newLang].placeholder}</span>`;
     menuDisplay.style.opacity = '1';
 });
@@ -123,9 +122,13 @@ recommendBtn.addEventListener('click', () => {
         const selectedMenu = menus[randomIndex];
         
         let content = `<strong>${selectedMenu[currentLang]}</strong>`;
-        if (selectedMenu.image) {
-            content = `<img src="${selectedMenu.image}" alt="${selectedMenu[currentLang]}">` + content;
-        }
+        
+        // Use provided image or generate one dynamically
+        // Using pollinations.ai for dynamic high-quality generated images based on the food name
+        // Adding 'food' keyword to ensure context
+        const imageUrl = selectedMenu.image || `https://image.pollinations.ai/prompt/delicious ${selectedMenu.en} food dish?width=400&height=300&nologo=true`;
+        
+        content = `<img src="${imageUrl}" alt="${selectedMenu[currentLang]}" loading="lazy">` + content;
         
         menuDisplay.innerHTML = content;
         menuDisplay.style.opacity = '1';

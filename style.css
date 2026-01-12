@@ -104,10 +104,12 @@ h1 {
 
 .menu-display img {
     max-width: 100%;
-    max-height: 200px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px var(--shadow-color);
+    max-height: 250px; /* Slightly increased max height */
+    width: auto;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px var(--shadow-color);
     object-fit: cover;
+    margin-bottom: 0.5rem;
 }
 
 .placeholder {
