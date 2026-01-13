@@ -148,7 +148,7 @@ function spawnObstacle() {
             img = obsCoffeeImg;
             w = 120;
             h = 51; 
-            offset = SIDEWALK_OFFSET;
+            offset = 80;
         } else if (rand < 0.66) {
             type = 'pigeon';
             img = obsPigeonImg;
