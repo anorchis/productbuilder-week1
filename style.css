@@ -1,8 +1,9 @@
 :root {
-    --bg-color: #202020; /* Darker background to frame the game */
-    --text-color: #ffffff; /* White text for better contrast on images */
-    --canvas-width: 600px;
-    --canvas-height: 150px;
+    --bg-color: #202020;
+    --text-color: #ffffff;
+    /* Updated to match the natural dimensions of way.png */
+    --canvas-width: 1024px;
+    --canvas-height: 434px;
 }
 
 body {
@@ -23,14 +24,18 @@ body {
     position: relative;
     width: var(--canvas-width);
     height: var(--canvas-height);
-    box-shadow: 0 0 20px rgba(0,0,0,0.5); /* Glow effect */
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    /* Ensure it scales down on smaller screens */
+    max-width: 100%;
+    max-height: 100vh;
 }
 
 canvas {
     display: block;
-    /* Border removed to let the image background define the ground */
     width: 100%;
     height: 100%;
+    /* Ensure aspect ratio is preserved if scaled */
+    object-fit: contain;
 }
 
 #game-ui {
@@ -48,12 +53,12 @@ canvas {
 }
 
 #game-over-text {
-    font-size: 24px;
+    font-size: 48px; /* Larger text for larger canvas */
     color: var(--text-color);
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     font-family: monospace;
     font-weight: bold;
-    text-shadow: 2px 2px 0 #000; /* Outline for visibility */
+    text-shadow: 4px 4px 0 #000;
 }
 
 #restart-btn {
@@ -63,10 +68,9 @@ canvas {
     padding: 0;
 }
 
-/* Simple icon for restart button using CSS to mimic the refresh arrow */
 #restart-btn::after {
     content: "↻";
-    font-size: 30px;
+    font-size: 60px; /* Larger button */
     color: var(--text-color);
-    text-shadow: 2px 2px 0 #000;
+    text-shadow: 4px 4px 0 #000;
 }

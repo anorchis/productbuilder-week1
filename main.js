@@ -1,10 +1,14 @@
 // Game Constants
-const CANVAS_WIDTH = 600;
-const CANVAS_HEIGHT = 150;
-const GRAVITY = 0.6;
-const JUMP_STRENGTH = -10;
-const SPEED_INCREMENT = 0.001;
-const INITIAL_SPEED = 5;
+// Updated to match image natural dimensions
+const CANVAS_WIDTH = 1024;
+const CANVAS_HEIGHT = 434;
+
+// Physics adjustments for larger scale
+// Gravity needs to be stronger for a taller world, jump stronger too
+const GRAVITY = 1.5; 
+const JUMP_STRENGTH = -25; 
+const SPEED_INCREMENT = 0.002;
+const INITIAL_SPEED = 8;
 
 // Assets
 const bgImage = new Image();
@@ -22,21 +26,26 @@ let highScore = localStorage.getItem('dinoHighScore') || 0;
 let gameRunning = false;
 let gameOver = false;
 let frameId;
-let bgX = 0; // Background scroll position
+let bgX = 0;
 
 // Entities
 let dino = {
+    // Start x slightly further out
     x: 50,
     y: 0,
-    width: 40,
-    height: 40,
+    // Original dimensions from file analysis
+    width: 610,
+    height: 409,
     dy: 0,
     grounded: true,
     jumpTimer: 0
 };
 
+// Sidewalk offset - Adjust this if he looks like he's floating or buried
+// Assuming the bottom of the image is the bottom of the sidewalk
+const BOTTOM_OFFSET = 0; 
+
 let obstacles = [];
-let clouds = [];
 
 function init() {
     canvas = document.getElementById('gameCanvas');
@@ -47,6 +56,8 @@ function init() {
     canvas.width = CANVAS_WIDTH * dpr;
     canvas.height = CANVAS_HEIGHT * dpr;
     ctx.scale(dpr, dpr);
+    
+    // Force style to match aspect ratio
     canvas.style.width = `${CANVAS_WIDTH}px`;
     canvas.style.height = `${CANVAS_HEIGHT}px`;
 
@@ -54,15 +65,15 @@ function init() {
     ctx.imageSmoothingEnabled = false;
 
     document.addEventListener('keydown', handleInput);
-    document.addEventListener('touchstart', handleInput); // Mobile support
+    document.addEventListener('touchstart', handleInput); 
     document.getElementById('restart-btn').addEventListener('click', resetGame);
 
+    // Initial positioning
+    dino.y = CANVAS_HEIGHT - dino.height - BOTTOM_OFFSET;
+
     resetGame();
-    // Don't auto-start, wait for input
     gameRunning = false;
     
-    // Load check logic is handled naturally by the draw loop 
-    // or we can force a redraw on load if needed, but the loop picks it up.
     bgImage.onload = draw;
     dinoRunImage.onload = draw;
     draw(); 
@@ -75,10 +86,9 @@ function resetGame() {
     gameOver = false;
     bgX = 0;
     
-    dino.y = CANVAS_HEIGHT - dino.height;
+    dino.y = CANVAS_HEIGHT - dino.height - BOTTOM_OFFSET;
     dino.dy = 0;
     obstacles = [];
-    clouds = [];
 
     document.getElementById('game-ui').classList.remove('visible');
     
@@ -88,7 +98,6 @@ function resetGame() {
 
 function handleInput(e) {
     if (e.type === 'keydown' && e.code !== 'Space' && e.code !== 'ArrowUp') return;
-    // Touchstart doesn't need key checks
     
     if (gameOver) {
         resetGame();
@@ -107,20 +116,21 @@ function handleInput(e) {
 }
 
 function spawnObstacle() {
-    // Randomly spawn obstacles
-    if (Math.random() < 0.02) {
-        const height = Math.random() > 0.5 ? 40 : 25; // Small or Big Cactus
-        const width = height === 40 ? 25 : 15;
+    if (Math.random() < 0.015) { // Slightly lower spawn rate for larger map
+        // Scale obstacles up to match the new world size
+        const isBig = Math.random() > 0.5;
+        const height = isBig ? 80 : 50; 
+        const width = isBig ? 50 : 30;
         
-        // Ensure minimum distance between obstacles
         if (obstacles.length > 0) {
             const lastObstacle = obstacles[obstacles.length - 1];
-            if (CANVAS_WIDTH - lastObstacle.x < 200) return;
+            // Ensure minimum distance scales with speed and size
+            if (CANVAS_WIDTH - lastObstacle.x < 400) return;
         }
 
         obstacles.push({
             x: CANVAS_WIDTH,
-            y: CANVAS_HEIGHT - height,
+            y: CANVAS_HEIGHT - height - BOTTOM_OFFSET, // Place on same ground line
             width: width,
             height: height
         });
@@ -138,8 +148,9 @@ function update() {
     dino.y += dino.dy;
 
     // Ground Collision
-    if (dino.y + dino.height > CANVAS_HEIGHT) {
-        dino.y = CANVAS_HEIGHT - dino.height;
+    const groundY = CANVAS_HEIGHT - dino.height - BOTTOM_OFFSET;
+    if (dino.y > groundY) {
+        dino.y = groundY;
         dino.dy = 0;
         dino.grounded = true;
     }
@@ -153,7 +164,6 @@ function update() {
     // Move Obstacles
     spawnObstacle();
     
-    // Iterate backwards to safely remove elements
     for (let i = obstacles.length - 1; i >= 0; i--) {
         let obs = obstacles[i];
         obs.x -= gameSpeed;
@@ -163,23 +173,32 @@ function update() {
         }
     }
 
-    // Speed up
     gameSpeed += SPEED_INCREMENT;
 
     // Collision Detection
     for (let obs of obstacles) {
-        // Simple AABB collision
-        // Shrink hitbox slightly for fairer play with sprite
-        const hitX = dino.x + 10; // Tighter hitbox for the character
-        const hitY = dino.y + 5;
-        const hitW = dino.width - 20;
-        const hitH = dino.height - 10;
+        // Massive Hitbox Adjustment
+        // The image is 610x409 but the character is likely much smaller in the center.
+        // We'll approximate a "foot" hitbox at the bottom center.
+        
+        // Let's assume the character body is roughly centered horizontally
+        // and at the bottom vertically.
+        
+        const hitWidth = 80; // Estimate effective width of the "man"
+        const hitHeight = 150; // Estimate effective height
+        
+        const hitX = dino.x + (dino.width / 2) - (hitWidth / 2) - 50; // Shift left a bit as he is running forward
+        const hitY = dino.y + dino.height - hitHeight; // Bottom aligned
+
+        // Debug drawing for hitbox (comment out in production if needed, but useful for verifying)
+        // ctx.strokeStyle = 'red';
+        // ctx.strokeRect(hitX, hitY, hitWidth, hitHeight);
 
         if (
             hitX < obs.x + obs.width &&
-            hitX + hitW > obs.x &&
+            hitX + hitWidth > obs.x &&
             hitY < obs.y + obs.height &&
-            hitY + hitH > obs.y
+            hitY + hitHeight > obs.y
         ) {
             handleGameOver();
         }
@@ -194,24 +213,22 @@ function draw() {
         ctx.drawImage(bgImage, bgX, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         ctx.drawImage(bgImage, bgX + CANVAS_WIDTH, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     } else {
-        // Fallback
-        ctx.fillStyle = '#f7f7f7';
+        ctx.fillStyle = '#202020';
         ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     }
 
-    // Draw Character (Worker)
+    // Draw Character
     let currentDinoImage = dino.grounded ? dinoRunImage : dinoJumpImage;
     
     if (currentDinoImage.complete && currentDinoImage.naturalWidth > 0) {
+        // Draw at full resolution
         ctx.drawImage(currentDinoImage, dino.x, dino.y, dino.width, dino.height);
     } else {
-         ctx.fillStyle = '#535353';
-         ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+         ctx.fillStyle = 'red';
+         ctx.fillRect(dino.x, dino.y, 50, 100);
     }
 
     // Obstacles
-    // Use a color that stands out against the city/way background
-    // Maybe a construction cone orange or dark barrier color?
     ctx.fillStyle = '#d35400'; 
     obstacles.forEach(obs => {
         ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
@@ -219,14 +236,13 @@ function draw() {
 
     // Score
     ctx.fillStyle = '#ffffff'; 
-    ctx.font = 'bold 20px monospace';
+    ctx.font = 'bold 30px monospace';
     ctx.shadowColor = "black";
     ctx.shadowBlur = 4;
     ctx.textAlign = 'right';
     const scoreText = `HI ${Math.floor(highScore)} ${Math.floor(score).toString().padStart(5, '0')}`;
-    ctx.fillText(scoreText, CANVAS_WIDTH - 10, 30);
+    ctx.fillText(scoreText, CANVAS_WIDTH - 20, 50);
     
-    // Reset shadow
     ctx.shadowBlur = 0;
 }
 
@@ -241,5 +257,4 @@ function handleGameOver() {
     draw(); 
 }
 
-// Start
 init();
