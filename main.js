@@ -1,10 +1,8 @@
 // Game Constants
-// Updated to match image natural dimensions
 const CANVAS_WIDTH = 1024;
 const CANVAS_HEIGHT = 434;
 
-// Physics adjustments for larger scale
-// Gravity needs to be stronger for a taller world, jump stronger too
+// Physics adjustments
 const GRAVITY = 0.8; 
 const JUMP_STRENGTH = -15; 
 const SPEED_INCREMENT = 0.002;
@@ -18,6 +16,14 @@ dinoRunImage.src = 'worker.png';
 const dinoJumpImage = new Image();
 dinoJumpImage.src = 'jump.png';
 
+// Obstacle Assets
+const obsCoffeeImg = new Image();
+obsCoffeeImg.src = 'coffee.png';
+const obsPigeonImg = new Image();
+obsPigeonImg.src = 'pigeon.png';
+const obsBoardImg = new Image();
+obsBoardImg.src = 'board.png';
+
 // Game State
 let canvas, ctx;
 let gameSpeed = INITIAL_SPEED;
@@ -30,19 +36,14 @@ let bgX = 0;
 
 // Entities
 let dino = {
-    // Start x slightly further out
     x: 50,
     y: 0,
-    // Scaled to 1/3 of original (610x409)
     width: 203,
     height: 136,
     dy: 0,
-    grounded: true,
-    jumpTimer: 0
+    grounded: true
 };
 
-// Sidewalk offset - Adjust this if he looks like he's floating or buried
-// Assuming the bottom of the image is the bottom of the sidewalk
 const BOTTOM_OFFSET = 40; 
 
 let obstacles = [];
@@ -51,24 +52,20 @@ function init() {
     canvas = document.getElementById('gameCanvas');
     ctx = canvas.getContext('2d');
     
-    // Scale for Retina/HighDPI
     const dpr = window.devicePixelRatio || 1;
     canvas.width = CANVAS_WIDTH * dpr;
     canvas.height = CANVAS_HEIGHT * dpr;
     ctx.scale(dpr, dpr);
     
-    // Force style to match aspect ratio
     canvas.style.width = `${CANVAS_WIDTH}px`;
     canvas.style.height = `${CANVAS_HEIGHT}px`;
 
-    // Disable image smoothing for pixel art look
     ctx.imageSmoothingEnabled = false;
 
     document.addEventListener('keydown', handleInput);
     document.addEventListener('touchstart', handleInput); 
     document.getElementById('restart-btn').addEventListener('click', resetGame);
 
-    // Initial positioning
     dino.y = CANVAS_HEIGHT - dino.height - BOTTOM_OFFSET;
 
     resetGame();
@@ -116,24 +113,39 @@ function handleInput(e) {
 }
 
 function spawnObstacle() {
-    if (Math.random() < 0.015) { // Slightly lower spawn rate for larger map
-        // Scale obstacles relative to the new character size
-        // Man is ~136px tall.
-        const isBig = Math.random() > 0.5;
-        const height = isBig ? 60 : 40; 
-        const width = isBig ? 30 : 20;
-        
+    if (Math.random() < 0.015) {
         if (obstacles.length > 0) {
             const lastObstacle = obstacles[obstacles.length - 1];
-            // Ensure minimum distance scales with speed and size
-            if (CANVAS_WIDTH - lastObstacle.x < 400) return;
+            if (CANVAS_WIDTH - lastObstacle.x < 450) return;
+        }
+
+        const rand = Math.random();
+        let type, img, w, h;
+
+        if (rand < 0.33) {
+            type = 'coffee';
+            img = obsCoffeeImg;
+            w = 120;
+            h = 51; // 1/6 scale approx
+        } else if (rand < 0.66) {
+            type = 'pigeon';
+            img = obsPigeonImg;
+            w = 100;
+            h = 48; // 1/7 scale approx
+        } else {
+            type = 'board';
+            img = obsBoardImg;
+            w = 152;
+            h = 102; // 1/4 scale approx
         }
 
         obstacles.push({
             x: CANVAS_WIDTH,
-            y: CANVAS_HEIGHT - height - BOTTOM_OFFSET, // Place on same ground line
-            width: width,
-            height: height
+            y: CANVAS_HEIGHT - h - BOTTOM_OFFSET,
+            width: w,
+            height: h,
+            img: img,
+            type: type
         });
     }
 }
@@ -144,11 +156,9 @@ function update() {
     frameId = requestAnimationFrame(update);
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    // Physics
     dino.dy += GRAVITY;
     dino.y += dino.dy;
 
-    // Ground Collision
     const groundY = CANVAS_HEIGHT - dino.height - BOTTOM_OFFSET;
     if (dino.y > groundY) {
         dino.y = groundY;
@@ -156,13 +166,11 @@ function update() {
         dino.grounded = true;
     }
 
-    // Scroll Background
     bgX -= gameSpeed;
     if (bgX <= -CANVAS_WIDTH) {
         bgX = 0;
     }
 
-    // Move Obstacles
     spawnObstacle();
     
     for (let i = obstacles.length - 1; i >= 0; i--) {
@@ -178,26 +186,23 @@ function update() {
 
     // Collision Detection
     for (let obs of obstacles) {
-        // Hitbox Adjustment for 1/3 scale character
-        // Visual width is 203, but significant whitespace exists.
-        // Tighter hitbox for gameplay feel.
-        
+        // Tighter hitbox for worker
         const hitWidth = 40; 
-        const hitHeight = 80; 
-        
-        // Centered horizontally relative to the sprite frame, bottom aligned
+        const hitHeight = 90; 
         const hitX = dino.x + (dino.width / 2) - (hitWidth / 2) - 10; 
         const hitY = dino.y + dino.height - hitHeight; 
 
-        // Debug drawing for hitbox (comment out in production)
-        // ctx.strokeStyle = 'red';
-        // ctx.strokeRect(hitX, hitY, hitWidth, hitHeight);
+        // Obstacle hitbox (tighter for images)
+        const obsHitX = obs.x + (obs.width * 0.1);
+        const obsHitW = obs.width * 0.8;
+        const obsHitY = obs.y + (obs.height * 0.1);
+        const obsHitH = obs.height * 0.8;
 
         if (
-            hitX < obs.x + obs.width &&
-            hitX + hitWidth > obs.x &&
-            hitY < obs.y + obs.height &&
-            hitY + hitHeight > obs.y
+            hitX < obsHitX + obsHitW &&
+            hitX + hitWidth > obsHitX &&
+            hitY < obsHitY + obsHitH &&
+            hitY + hitHeight > obsHitY
         ) {
             handleGameOver();
         }
@@ -207,7 +212,6 @@ function update() {
 }
 
 function draw() {
-    // Draw Background
     if (bgImage.complete && bgImage.naturalWidth > 0) {
         ctx.drawImage(bgImage, bgX, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         ctx.drawImage(bgImage, bgX + CANVAS_WIDTH, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -216,24 +220,17 @@ function draw() {
         ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     }
 
-    // Draw Character
     let currentDinoImage = dino.grounded ? dinoRunImage : dinoJumpImage;
-    
     if (currentDinoImage.complete && currentDinoImage.naturalWidth > 0) {
-        // Draw at full resolution
         ctx.drawImage(currentDinoImage, dino.x, dino.y, dino.width, dino.height);
-    } else {
-         ctx.fillStyle = 'red';
-         ctx.fillRect(dino.x, dino.y, 50, 100);
     }
 
-    // Obstacles
-    ctx.fillStyle = '#d35400'; 
     obstacles.forEach(obs => {
-        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+        if (obs.img.complete) {
+            ctx.drawImage(obs.img, obs.x, obs.y, obs.width, obs.height);
+        }
     });
 
-    // Score
     ctx.fillStyle = '#ffffff'; 
     ctx.font = 'bold 30px monospace';
     ctx.shadowColor = "black";
@@ -241,7 +238,6 @@ function draw() {
     ctx.textAlign = 'right';
     const scoreText = `HI ${Math.floor(highScore)} ${Math.floor(score).toString().padStart(5, '0')}`;
     ctx.fillText(scoreText, CANVAS_WIDTH - 20, 50);
-    
     ctx.shadowBlur = 0;
 }
 
