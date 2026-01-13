@@ -21,6 +21,9 @@ A web-based clone of the famous Chrome "No Internet" Dinosaur game. The applicat
     -   Collision detection.
     -   Score keeping.
 5.  **Assets**: Use simple drawing primitives (rectangles) or base64 placeholders to mimic the classic Dino and Cacti initially to ensure "exact" feel before adding custom art.
+6.  **Adjustments**:
+    -   Moved character and pigeon slightly up (SIDEWALK_OFFSET adjusted to 130).
+    -   User requested `board.png` replacement.
 
 ## Future Steps
 -   Upgrade graphics to "prettier pixel art".
