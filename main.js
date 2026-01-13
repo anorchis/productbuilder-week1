@@ -115,7 +115,13 @@ function resetGame(start = true) {
 }
 
 function handleInput(e) {
-    if (e.type === 'keydown' && e.code !== 'Space' && e.code !== 'ArrowUp') return; 
+    if (e.type === 'keydown') {
+        if (e.code === 'Space' || e.code === 'ArrowUp') {
+            e.preventDefault();
+        } else {
+            return;
+        }
+    }
     
     if (gameOver) {
         resetGame(true);
