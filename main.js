@@ -158,9 +158,10 @@ function spawnObstacle() {
         } else {
             type = 'board';
             img = obsBoardImg;
-            // New Image is 356x498. Scaling to ~50%
-            w = 178; 
-            h = 249; 
+            // Original: 356x498. Aspect Ratio ~1.4
+            // Scaling to match character height (~136px) roughly
+            w = 107; 
+            h = 150; 
             offset = ROAD_OFFSET; // Stays on the road
         }
 
