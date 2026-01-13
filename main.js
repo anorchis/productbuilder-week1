@@ -58,7 +58,7 @@ let dino = {
     grounded: true
 };
 
-const BOTTOM_OFFSET = 40; 
+const BOTTOM_OFFSET = 60; // Increased to move everything up
 
 let obstacles = [];
 
@@ -78,22 +78,21 @@ function init() {
 
     document.addEventListener('keydown', handleInput);
     document.addEventListener('touchstart', handleInput); 
-    document.getElementById('restart-btn').addEventListener('click', resetGame);
+    document.getElementById('restart-btn').addEventListener('click', () => resetGame(true));
 
-    dino.y = CANVAS_HEIGHT - dino.height - BOTTOM_OFFSET;
-
-    resetGame();
-    gameRunning = false;
+    // Initial setup without starting the loop
+    resetGame(false);
     
     bgImage.onload = draw;
     dinoRunImage.onload = draw;
-    draw(); 
+    // Force a draw in case images are already loaded or slow to load
+    requestAnimationFrame(draw); 
 }
 
-function resetGame() {
+function resetGame(start = true) {
     gameSpeed = INITIAL_SPEED;
     score = 0;
-    gameRunning = true;
+    gameRunning = start;
     gameOver = false;
     bgX = 0;
     
@@ -104,14 +103,20 @@ function resetGame() {
     document.getElementById('game-ui').classList.remove('visible');
     
     if (frameId) cancelAnimationFrame(frameId);
-    requestAnimationFrame(update);
+    
+    if (start) {
+        update();
+    } else {
+        // Just position things but don't loop
+        draw();
+    }
 }
 
 function handleInput(e) {
     if (e.type === 'keydown' && e.code !== 'Space' && e.code !== 'ArrowUp') return; 
     
     if (gameOver) {
-        resetGame();
+        resetGame(true);
         return;
     }
 
@@ -140,17 +145,17 @@ function spawnObstacle() {
             type = 'coffee';
             img = obsCoffeeImg;
             w = 120;
-            h = 51; // 1/6 scale approx
+            h = 51; 
         } else if (rand < 0.66) {
             type = 'pigeon';
             img = obsPigeonImg;
             w = 100;
-            h = 48; // 1/7 scale approx
+            h = 48; 
         } else {
             type = 'board';
             img = obsBoardImg;
             w = 152;
-            h = 102; // 1/4 scale approx
+            h = 102; 
         }
 
         obstacles.push({
@@ -200,13 +205,11 @@ function update() {
 
     // Collision Detection
     for (let obs of obstacles) {
-        // Tighter hitbox for worker
         const hitWidth = 40; 
         const hitHeight = 90; 
         const hitX = dino.x + (dino.width / 2) - (hitWidth / 2) - 10; 
         const hitY = dino.y + dino.height - hitHeight; 
 
-        // Obstacle hitbox (tighter for images)
         const obsHitX = obs.x + (obs.width * 0.1);
         const obsHitW = obs.width * 0.8;
         const obsHitY = obs.y + (obs.height * 0.1);
@@ -256,12 +259,21 @@ function draw() {
     // Initial Start Screen Text
     if (!gameRunning && !gameOver) {
         ctx.textAlign = 'center';
-        ctx.font = 'bold 40px monospace'; // Slightly larger for emphasis
         
-        const lang = navigator.language.split('-')[0];
-        const text = startMessages[lang] || startMessages['en'];
+        // Background box for text readability
+        const textMsg = startMessages[navigator.language.split('-')[0]] || startMessages['en'];
+        ctx.font = 'bold 40px monospace';
+        const textMetrics = ctx.measureText(textMsg);
+        const textW = textMetrics.width;
+        const textH = 40;
         
-        ctx.fillText(text, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect((CANVAS_WIDTH / 2) - (textW / 2) - 20, (CANVAS_HEIGHT / 2) - (textH) - 10, textW + 40, textH + 30);
+
+        ctx.fillStyle = '#ffffff'; 
+        ctx.shadowColor = "black";
+        ctx.shadowBlur = 4;
+        ctx.fillText(textMsg, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
     }
 
     ctx.shadowBlur = 0;
