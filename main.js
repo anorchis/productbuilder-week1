@@ -201,7 +201,14 @@ function update() {
     
     for (let i = obstacles.length - 1; i >= 0; i--) {
         let obs = obstacles[i];
-        obs.x -= gameSpeed;
+        
+        // Make 'board' (scooter) move faster to the left
+        if (obs.type === 'board') {
+            obs.x -= (gameSpeed + 4); 
+        } else {
+            obs.x -= gameSpeed;
+        }
+
         if (obs.x + obs.width < 0) {
             obstacles.splice(i, 1);
             score++;
