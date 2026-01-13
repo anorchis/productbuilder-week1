@@ -58,7 +58,10 @@ let dino = {
     grounded: true
 };
 
-const BOTTOM_OFFSET = 60; // Increased to move everything up
+// Offset for sidewalk (Worker, Coffee, Pigeon)
+const SIDEWALK_OFFSET = 80; 
+// Offset for road (Scooter/Board)
+const ROAD_OFFSET = 20;
 
 let obstacles = [];
 
@@ -80,12 +83,11 @@ function init() {
     document.addEventListener('touchstart', handleInput); 
     document.getElementById('restart-btn').addEventListener('click', () => resetGame(true));
 
-    // Initial setup without starting the loop
+    // Initial setup
     resetGame(false);
     
     bgImage.onload = draw;
     dinoRunImage.onload = draw;
-    // Force a draw in case images are already loaded or slow to load
     requestAnimationFrame(draw); 
 }
 
@@ -96,7 +98,8 @@ function resetGame(start = true) {
     gameOver = false;
     bgX = 0;
     
-    dino.y = CANVAS_HEIGHT - dino.height - BOTTOM_OFFSET;
+    // Worker is on the sidewalk
+    dino.y = CANVAS_HEIGHT - dino.height - SIDEWALK_OFFSET;
     dino.dy = 0;
     obstacles = [];
 
@@ -107,7 +110,6 @@ function resetGame(start = true) {
     if (start) {
         update();
     } else {
-        // Just position things but don't loop
         draw();
     }
 }
@@ -139,28 +141,32 @@ function spawnObstacle() {
         }
 
         const rand = Math.random();
-        let type, img, w, h;
+        let type, img, w, h, offset;
 
         if (rand < 0.33) {
             type = 'coffee';
             img = obsCoffeeImg;
             w = 120;
             h = 51; 
+            offset = SIDEWALK_OFFSET;
         } else if (rand < 0.66) {
             type = 'pigeon';
             img = obsPigeonImg;
             w = 100;
             h = 48; 
+            offset = SIDEWALK_OFFSET;
         } else {
             type = 'board';
             img = obsBoardImg;
-            w = 152;
-            h = 102; 
+            // New Image is 356x498. Scaling to ~50%
+            w = 178; 
+            h = 249; 
+            offset = ROAD_OFFSET; // Stays on the road
         }
 
         obstacles.push({
             x: CANVAS_WIDTH,
-            y: CANVAS_HEIGHT - h - BOTTOM_OFFSET,
+            y: CANVAS_HEIGHT - h - offset,
             width: w,
             height: h,
             img: img,
@@ -178,7 +184,7 @@ function update() {
     dino.dy += GRAVITY;
     dino.y += dino.dy;
 
-    const groundY = CANVAS_HEIGHT - dino.height - BOTTOM_OFFSET;
+    const groundY = CANVAS_HEIGHT - dino.height - SIDEWALK_OFFSET;
     if (dino.y > groundY) {
         dino.y = groundY;
         dino.dy = 0;
@@ -210,8 +216,10 @@ function update() {
         const hitX = dino.x + (dino.width / 2) - (hitWidth / 2) - 10; 
         const hitY = dino.y + dino.height - hitHeight; 
 
-        const obsHitX = obs.x + (obs.width * 0.1);
-        const obsHitW = obs.width * 0.8;
+        // Obstacle hitbox
+        // For tall scooter, hit box focuses on the rider/stem
+        const obsHitX = obs.x + (obs.width * 0.2);
+        const obsHitW = obs.width * 0.6;
         const obsHitY = obs.y + (obs.height * 0.1);
         const obsHitH = obs.height * 0.8;
 
@@ -256,11 +264,9 @@ function draw() {
     const scoreText = `HI ${Math.floor(highScore)} ${Math.floor(score).toString().padStart(5, '0')}`;
     ctx.fillText(scoreText, CANVAS_WIDTH - 20, 50);
 
-    // Initial Start Screen Text
     if (!gameRunning && !gameOver) {
         ctx.textAlign = 'center';
         
-        // Background box for text readability
         const textMsg = startMessages[navigator.language.split('-')[0]] || startMessages['en'];
         ctx.font = 'bold 40px monospace';
         const textMetrics = ctx.measureText(textMsg);
