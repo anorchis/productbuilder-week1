@@ -43,7 +43,7 @@ let dino = {
 
 // Sidewalk offset - Adjust this if he looks like he's floating or buried
 // Assuming the bottom of the image is the bottom of the sidewalk
-const BOTTOM_OFFSET = 10; 
+const BOTTOM_OFFSET = 40; 
 
 let obstacles = [];
 
