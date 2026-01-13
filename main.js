@@ -8,9 +8,11 @@ const INITIAL_SPEED = 5;
 
 // Assets
 const bgImage = new Image();
-bgImage.src = 'background.png';
-const dinoImage = new Image();
-dinoImage.src = 'character.png';
+bgImage.src = 'way.png';
+const dinoRunImage = new Image();
+dinoRunImage.src = 'worker.png';
+const dinoJumpImage = new Image();
+dinoJumpImage.src = 'jump.png';
 
 // Game State
 let canvas, ctx;
@@ -59,10 +61,10 @@ function init() {
     // Don't auto-start, wait for input
     gameRunning = false;
     
-    // Wait for images to load before initial draw if needed, 
-    // but drawing loop handles it via checks or it just pops in.
+    // Load check logic is handled naturally by the draw loop 
+    // or we can force a redraw on load if needed, but the loop picks it up.
     bgImage.onload = draw;
-    dinoImage.onload = draw;
+    dinoRunImage.onload = draw;
     draw(); 
 }
 
@@ -143,7 +145,6 @@ function update() {
     }
 
     // Scroll Background
-    // Assuming background includes the ground, it moves at gameSpeed
     bgX -= gameSpeed;
     if (bgX <= -CANVAS_WIDTH) {
         bgX = 0;
@@ -169,9 +170,9 @@ function update() {
     for (let obs of obstacles) {
         // Simple AABB collision
         // Shrink hitbox slightly for fairer play with sprite
-        const hitX = dino.x + 5;
+        const hitX = dino.x + 10; // Tighter hitbox for the character
         const hitY = dino.y + 5;
-        const hitW = dino.width - 10;
+        const hitW = dino.width - 20;
         const hitH = dino.height - 10;
 
         if (
@@ -190,7 +191,6 @@ function update() {
 function draw() {
     // Draw Background
     if (bgImage.complete && bgImage.naturalWidth > 0) {
-        // Draw two copies for infinite scrolling
         ctx.drawImage(bgImage, bgX, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         ctx.drawImage(bgImage, bgX + CANVAS_WIDTH, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     } else {
@@ -199,27 +199,27 @@ function draw() {
         ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     }
 
-    // Draw Dino
-    if (dinoImage.complete && dinoImage.naturalWidth > 0) {
-        ctx.drawImage(dinoImage, dino.x, dino.y, dino.width, dino.height);
+    // Draw Character (Worker)
+    let currentDinoImage = dino.grounded ? dinoRunImage : dinoJumpImage;
+    
+    if (currentDinoImage.complete && currentDinoImage.naturalWidth > 0) {
+        ctx.drawImage(currentDinoImage, dino.x, dino.y, dino.width, dino.height);
     } else {
          ctx.fillStyle = '#535353';
          ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
     }
 
-    // Obstacles (Cacti)
-    // Use a color that stands out against the new background
-    // Since we don't know the bg color for sure, dark grey is usually safe, 
-    // or maybe a dark green/brown if it's a forest.
-    ctx.fillStyle = '#2c3e50'; 
+    // Obstacles
+    // Use a color that stands out against the city/way background
+    // Maybe a construction cone orange or dark barrier color?
+    ctx.fillStyle = '#d35400'; 
     obstacles.forEach(obs => {
         ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
     });
 
     // Score
-    ctx.fillStyle = '#ffffff'; // White text might be better on a colored background
+    ctx.fillStyle = '#ffffff'; 
     ctx.font = 'bold 20px monospace';
-    // Add text shadow for readability
     ctx.shadowColor = "black";
     ctx.shadowBlur = 4;
     ctx.textAlign = 'right';
