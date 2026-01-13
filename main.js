@@ -24,6 +24,20 @@ obsPigeonImg.src = 'pigeon.png';
 const obsBoardImg = new Image();
 obsBoardImg.src = 'board.png';
 
+// Translations
+const startMessages = {
+    'en': 'Press Spacebar to Start',
+    'ko': '스페이스바를 눌러 시작하세요',
+    'ja': 'スペースキーを押して開始',
+    'zh': '按空格键开始',
+    'es': 'Presiona la barra espaciadora para empezar',
+    'fr': 'Appuyez sur la barre d\'espace pour commencer',
+    'de': 'Leertaste drücken zum Starten',
+    'it': 'Premi la barra spaziatrice per iniziare',
+    'pt': 'Pressione a barra de espaço para iniciar',
+    'ru': 'Нажмите пробел для старта'
+};
+
 // Game State
 let canvas, ctx;
 let gameSpeed = INITIAL_SPEED;
@@ -94,7 +108,7 @@ function resetGame() {
 }
 
 function handleInput(e) {
-    if (e.type === 'keydown' && e.code !== 'Space' && e.code !== 'ArrowUp') return;
+    if (e.type === 'keydown' && e.code !== 'Space' && e.code !== 'ArrowUp') return; 
     
     if (gameOver) {
         resetGame();
@@ -151,7 +165,7 @@ function spawnObstacle() {
 }
 
 function update() {
-    if (!gameRunning || gameOver) return;
+    if (!gameRunning || gameOver) return; 
     
     frameId = requestAnimationFrame(update);
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -238,6 +252,18 @@ function draw() {
     ctx.textAlign = 'right';
     const scoreText = `HI ${Math.floor(highScore)} ${Math.floor(score).toString().padStart(5, '0')}`;
     ctx.fillText(scoreText, CANVAS_WIDTH - 20, 50);
+
+    // Initial Start Screen Text
+    if (!gameRunning && !gameOver) {
+        ctx.textAlign = 'center';
+        ctx.font = 'bold 40px monospace'; // Slightly larger for emphasis
+        
+        const lang = navigator.language.split('-')[0];
+        const text = startMessages[lang] || startMessages['en'];
+        
+        ctx.fillText(text, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+    }
+
     ctx.shadowBlur = 0;
 }
 
