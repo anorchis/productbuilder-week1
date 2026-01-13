@@ -5,8 +5,8 @@ const CANVAS_HEIGHT = 434;
 
 // Physics adjustments for larger scale
 // Gravity needs to be stronger for a taller world, jump stronger too
-const GRAVITY = 1.5; 
-const JUMP_STRENGTH = -25; 
+const GRAVITY = 0.8; 
+const JUMP_STRENGTH = -15; 
 const SPEED_INCREMENT = 0.002;
 const INITIAL_SPEED = 8;
 
@@ -33,9 +33,9 @@ let dino = {
     // Start x slightly further out
     x: 50,
     y: 0,
-    // Original dimensions from file analysis
-    width: 610,
-    height: 409,
+    // Scaled to 1/3 of original (610x409)
+    width: 203,
+    height: 136,
     dy: 0,
     grounded: true,
     jumpTimer: 0
@@ -43,7 +43,7 @@ let dino = {
 
 // Sidewalk offset - Adjust this if he looks like he's floating or buried
 // Assuming the bottom of the image is the bottom of the sidewalk
-const BOTTOM_OFFSET = 0; 
+const BOTTOM_OFFSET = 10; 
 
 let obstacles = [];
 
@@ -117,10 +117,11 @@ function handleInput(e) {
 
 function spawnObstacle() {
     if (Math.random() < 0.015) { // Slightly lower spawn rate for larger map
-        // Scale obstacles up to match the new world size
+        // Scale obstacles relative to the new character size
+        // Man is ~136px tall.
         const isBig = Math.random() > 0.5;
-        const height = isBig ? 80 : 50; 
-        const width = isBig ? 50 : 30;
+        const height = isBig ? 60 : 40; 
+        const width = isBig ? 30 : 20;
         
         if (obstacles.length > 0) {
             const lastObstacle = obstacles[obstacles.length - 1];
@@ -177,20 +178,18 @@ function update() {
 
     // Collision Detection
     for (let obs of obstacles) {
-        // Massive Hitbox Adjustment
-        // The image is 610x409 but the character is likely much smaller in the center.
-        // We'll approximate a "foot" hitbox at the bottom center.
+        // Hitbox Adjustment for 1/3 scale character
+        // Visual width is 203, but significant whitespace exists.
+        // Tighter hitbox for gameplay feel.
         
-        // Let's assume the character body is roughly centered horizontally
-        // and at the bottom vertically.
+        const hitWidth = 40; 
+        const hitHeight = 80; 
         
-        const hitWidth = 80; // Estimate effective width of the "man"
-        const hitHeight = 150; // Estimate effective height
-        
-        const hitX = dino.x + (dino.width / 2) - (hitWidth / 2) - 50; // Shift left a bit as he is running forward
-        const hitY = dino.y + dino.height - hitHeight; // Bottom aligned
+        // Centered horizontally relative to the sprite frame, bottom aligned
+        const hitX = dino.x + (dino.width / 2) - (hitWidth / 2) - 10; 
+        const hitY = dino.y + dino.height - hitHeight; 
 
-        // Debug drawing for hitbox (comment out in production if needed, but useful for verifying)
+        // Debug drawing for hitbox (comment out in production)
         // ctx.strokeStyle = 'red';
         // ctx.strokeRect(hitX, hitY, hitWidth, hitHeight);
 
