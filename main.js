@@ -59,7 +59,7 @@ let dino = {
 };
 
 // Offset for sidewalk (Worker, Coffee, Pigeon)
-const SIDEWALK_OFFSET = 130; 
+const SIDEWALK_OFFSET = 120; 
 // Offset for road (Scooter/Board)
 const ROAD_OFFSET = 20;
 
