@@ -5,7 +5,7 @@ const CANVAS_HEIGHT = 434;
 // Physics adjustments
 const GRAVITY = 0.8; 
 const JUMP_STRENGTH = -15; 
-const SPEED_INCREMENT = 0.002;
+const SPEED_INCREMENT = 0.005;
 const INITIAL_SPEED = 8;
 
 // Assets
