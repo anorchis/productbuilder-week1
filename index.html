@@ -3,26 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dinner Menu Recommender</title>
+    <title>Chrome Dino Clone</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="controls">
-            <button id="lang-toggle" class="icon-btn" aria-label="Toggle Language">
-                🇺🇸
-            </button>
-            <button id="theme-toggle" class="icon-btn" aria-label="Toggle Dark Mode">
-                🌙
-            </button>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="game-ui" class="hidden">
+            <div id="game-over-text">GAME OVER</div>
+            <button id="restart-btn"></button>
         </div>
-        <h1 data-i18n="title">Dinner Menu Recommender</h1>
-        <p class="subtitle" data-i18n="subtitle">What should I eat today?</p>
-        <div id="menu-display" class="menu-display">
-            <span class="placeholder" data-i18n="placeholder">Click the button!</span>
-        </div>
-        <button id="recommend-btn" data-i18n="button">Recommend Menu</button>
     </div>
-    <script src="main.js"></script>
+    <script type="module" src="main.js"></script>
 </body>
 </html>

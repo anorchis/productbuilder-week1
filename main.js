@@ -1,151 +1,196 @@
-// Translations
-const translations = {
-    en: {
-        title: "Dinner Menu Recommender",
-        subtitle: "What should I eat today?",
-        placeholder: "Click the button!",
-        button: "Recommend Menu",
-        generating: "Nano Banana AI is generating...",
-        powered: "Powered by Nano Banana AI"
-    },
-    ko: {
-        title: "저녁 메뉴 추천기",
-        subtitle: "오늘 뭐 먹지?",
-        placeholder: "버튼을 눌러주세요!",
-        button: "메뉴 추천받기",
-        generating: "나노 바나나 AI가 그리는 중...",
-        powered: "Powered by Nano Banana AI"
-    }
+// Game Constants
+const CANVAS_WIDTH = 600;
+const CANVAS_HEIGHT = 150;
+const GRAVITY = 0.6;
+const JUMP_STRENGTH = -10;
+const SPEED_INCREMENT = 0.001;
+const INITIAL_SPEED = 5;
+
+// Game State
+let canvas, ctx;
+let gameSpeed = INITIAL_SPEED;
+let score = 0;
+let highScore = localStorage.getItem('dinoHighScore') || 0;
+let gameRunning = false;
+let gameOver = false;
+let frameId;
+
+// Entities
+let dino = {
+    x: 50,
+    y: 0,
+    width: 40,
+    height: 40,
+    dy: 0,
+    grounded: true,
+    jumpTimer: 0
 };
 
-// Menu Data (English and Korean) - Removed static images to force AI generation
-const menus = [
-    { en: "Kimchi Stew", ko: "김치찌개" },
-    { en: "Soybean Paste Stew", ko: "된장찌개" },
-    { en: "Bibimbap", ko: "비빔밥" },
-    { en: "Bulgogi", ko: "불고기" },
-    { en: "Grilled Pork Belly", ko: "삼겹살" },
-    { en: "Spicy Stir-fried Pork", ko: "제육볶음" },
-    { en: "Ginseng Chicken Soup", ko: "삼계탕" },
-    { en: "Tteokbokki", ko: "떡볶이" },
-    { en: "Cold Noodles", ko: "냉면" },
-    { en: "Braised Short Ribs", ko: "갈비찜" },
-    { en: "Jajangmyeon", ko: "짜장면" },
-    { en: "Jjamppong", ko: "짬뽕" },
-    { en: "Sweet and Sour Pork", ko: "탕수육" },
-    { en: "Fried Rice", ko: "볶음밥" },
-    { en: "Mapo Tofu", ko: "마파두부" },
-    { en: "Dumplings", ko: "만두" },
-    { en: "Sushi", ko: "초밥" },
-    { en: "Sashimi", ko: "회" },
-    { en: "Udon", ko: "우동" },
-    { en: "Ramen", ko: "라면" },
-    { en: "Pork Cutlet", ko: "돈까스" },
-    { en: "Tempura Rice Bowl", ko: "텐동" },
-    { en: "Soba Noodles", ko: "소바" },
-    { en: "Steak", ko: "스테이크" },
-    { en: "Pasta", ko: "파스타" },
-    { en: "Pizza", ko: "피자", image: "https://cdn.pixabay.com/photo/2017/08/06/06/43/pizza-2589569_1280.jpg" }, // Keep user preference
-    { en: "Hamburger", ko: "햄버거" },
-    { en: "Salad", ko: "샐러드" },
-    { en: "Sandwich", ko: "샌드위치" },
-    { en: "Fried Chicken", ko: "치킨" },
-    { en: "Pho", ko: "쌀국수" },
-    { en: "Curry", ko: "카레" },
-    { en: "Tacos", ko: "타코" }
-];
+let obstacles = [];
+let clouds = [];
 
-// State
-let currentLang = localStorage.getItem('lang') || 'ko';
+// Assets (Simple Drawing for now to match strict layout requests)
+// In a real strict clone we'd use sprite sheets, but drawing primitives works for logic.
 
-// Elements
-const themeToggleBtn = document.getElementById('theme-toggle');
-const langToggleBtn = document.getElementById('lang-toggle');
-const body = document.body;
-const recommendBtn = document.getElementById('recommend-btn');
-const menuDisplay = document.getElementById('menu-display');
+function init() {
+    canvas = document.getElementById('gameCanvas');
+    ctx = canvas.getContext('2d');
+    
+    // Scale for Retina/HighDPI
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = CANVAS_WIDTH * dpr;
+    canvas.height = CANVAS_HEIGHT * dpr;
+    ctx.scale(dpr, dpr);
+    canvas.style.width = `${CANVAS_WIDTH}px`;
+    canvas.style.height = `${CANVAS_HEIGHT}px`;
 
-// Functions
-function updateLanguage(lang) {
-    // Update UI text
-    document.querySelectorAll('[data-i18n]').forEach(element => {
-        const key = element.getAttribute('data-i18n');
-        if (translations[lang][key]) {
-            element.textContent = translations[lang][key];
+    document.addEventListener('keydown', handleInput);
+    document.addEventListener('touchstart', handleInput); // Mobile support
+    document.getElementById('restart-btn').addEventListener('click', resetGame);
+
+    resetGame();
+    // Don't auto-start, wait for input
+    gameRunning = false;
+    draw(); 
+}
+
+function resetGame() {
+    gameSpeed = INITIAL_SPEED;
+    score = 0;
+    gameRunning = true;
+    gameOver = false;
+    
+    dino.y = CANVAS_HEIGHT - dino.height;
+    dino.dy = 0;
+    obstacles = [];
+    clouds = [];
+
+    document.getElementById('game-ui').classList.remove('visible');
+    
+    if (frameId) cancelAnimationFrame(frameId);
+    requestAnimationFrame(update);
+}
+
+function handleInput(e) {
+    if (e.type === 'keydown' && e.code !== 'Space' && e.code !== 'ArrowUp') return;
+    // Touchstart doesn't need key checks
+    
+    if (gameOver) {
+        resetGame();
+        return;
+    }
+
+    if (!gameRunning) {
+        gameRunning = true;
+        update();
+    }
+
+    if (dino.grounded) {
+        dino.dy = JUMP_STRENGTH;
+        dino.grounded = false;
+    }
+}
+
+function spawnObstacle() {
+    // Randomly spawn obstacles
+    if (Math.random() < 0.02) {
+        const height = Math.random() > 0.5 ? 40 : 25; // Small or Big Cactus
+        const width = height === 40 ? 25 : 15;
+        
+        // Ensure minimum distance between obstacles
+        if (obstacles.length > 0) {
+            const lastObstacle = obstacles[obstacles.length - 1];
+            if (CANVAS_WIDTH - lastObstacle.x < 200) return;
         }
+
+        obstacles.push({
+            x: CANVAS_WIDTH,
+            y: CANVAS_HEIGHT - height,
+            width: width,
+            height: height
+        });
+    }
+}
+
+function update() {
+    if (!gameRunning || gameOver) return;
+    
+    frameId = requestAnimationFrame(update);
+    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    // Physics
+    dino.dy += GRAVITY;
+    dino.y += dino.dy;
+
+    // Ground Collision
+    if (dino.y + dino.height > CANVAS_HEIGHT) {
+        dino.y = CANVAS_HEIGHT - dino.height;
+        dino.dy = 0;
+        dino.grounded = true;
+    }
+
+    // Move Obstacles
+    spawnObstacle();
+    
+    // Iterate backwards to safely remove elements
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+        let obs = obstacles[i];
+        obs.x -= gameSpeed;
+        if (obs.x + obs.width < 0) {
+            obstacles.splice(i, 1);
+            score++;
+        }
+    }
+
+    // Speed up
+    gameSpeed += SPEED_INCREMENT;
+
+    // Collision Detection
+    for (let obs of obstacles) {
+        if (
+            dino.x < obs.x + obs.width &&
+            dino.x + dino.width > obs.x &&
+            dino.y < obs.y + obs.height &&
+            dino.y + dino.height > obs.y
+        ) {
+            handleGameOver();
+        }
+    }
+
+    draw();
+}
+
+function draw() {
+    // Background (already set in CSS, but can add clouds here)
+    
+    // Dino (Gray Rectangle for now)
+    ctx.fillStyle = '#535353';
+    ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+
+    // Obstacles (Cacti)
+    ctx.fillStyle = '#535353';
+    obstacles.forEach(obs => {
+        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
     });
 
-    // Update Toggle Button Text
-    langToggleBtn.textContent = lang === 'en' ? '🇰🇷' : '🇺🇸';
-    
-    // Save preference
-    localStorage.setItem('lang', lang);
-    currentLang = lang;
+    // Score
+    ctx.fillStyle = '#535353';
+    ctx.font = '20px monospace';
+    ctx.textAlign = 'right';
+    const scoreText = `HI ${Math.floor(highScore)} ${Math.floor(score).toString().padStart(5, '0')}`;
+    ctx.fillText(scoreText, CANVAS_WIDTH - 10, 30);
 }
 
-// Initialize Theme
-const savedTheme = localStorage.getItem('theme');
-const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
-    body.setAttribute('data-theme', 'dark');
-    themeToggleBtn.textContent = '☀️';
-}
-
-// Initialize Language
-updateLanguage(currentLang);
-
-// Event Listeners
-themeToggleBtn.addEventListener('click', () => {
-    const currentTheme = body.getAttribute('data-theme');
-    if (currentTheme === 'dark') {
-        body.removeAttribute('data-theme');
-        themeToggleBtn.textContent = '🌙';
-        localStorage.setItem('theme', 'light');
-    } else {
-        body.setAttribute('data-theme', 'dark');
-        themeToggleBtn.textContent = '☀️';
-        localStorage.setItem('theme', 'dark');
+function handleGameOver() {
+    gameOver = true;
+    gameRunning = false;
+    if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('dinoHighScore', highScore);
     }
-});
+    document.getElementById('game-ui').classList.add('visible');
+    draw(); // Draw one last time to ensure overlapping state is visible
+}
 
-langToggleBtn.addEventListener('click', () => {
-    const newLang = currentLang === 'en' ? 'ko' : 'en';
-    updateLanguage(newLang);
-    menuDisplay.innerHTML = `<span class="placeholder" data-i18n="placeholder">${translations[newLang].placeholder}</span>`;
-    menuDisplay.style.opacity = '1';
-});
-
-recommendBtn.addEventListener('click', () => {
-    // Show loading state
-    menuDisplay.style.opacity = '0.7';
-    menuDisplay.innerHTML = `<div class="loading">${translations[currentLang].generating}</div>`;
-    
-    setTimeout(() => {
-        const randomIndex = Math.floor(Math.random() * menus.length);
-        const selectedMenu = menus[randomIndex];
-        
-        // Nano Banana Style Prompt Construction
-        // We use a seed based on time to ensure randomness but consistency for the session
-        const timestamp = Date.now();
-        const prompt = `delicious ${selectedMenu.en}, food photography, hyper-realistic, 4k, cinematic lighting, appetizing`;
-        
-        // Priority: Specific Image URL (Pizza) -> AI Generation
-        let imageUrl = selectedMenu.image;
-        if (!imageUrl) {
-            imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=400&height=300&nologo=true&seed=${timestamp}&model=flux`;
-        }
-        
-        // Construct HTML
-        const content = `
-            <div class="menu-content">
-                <img src="${imageUrl}" alt="${selectedMenu[currentLang]}" loading="lazy" onload="this.style.opacity=1">
-                <div class="menu-name">${selectedMenu[currentLang]}</div>
-                <div class="ai-badge">${translations[currentLang].powered}</div>
-            </div>
-        `;
-        
-        menuDisplay.innerHTML = content;
-        menuDisplay.style.opacity = '1';
-    }, 500); // Short delay to show the "Generating" text
-});
+// Start
+init();

@@ -1,179 +1,68 @@
 :root {
-    --bg-color: #f0f0f0;
-    --container-bg: white;
-    --text-color: #333;
-    --subtitle-color: #666;
-    --shadow-color: rgba(0, 0, 0, 0.1);
-    --btn-bg: #FFC107; /* Banana Yellow/Amber */
-    --btn-hover: #FFB300;
-    --btn-text: #3e2723; /* Dark Brown text for contrast */
-    --highlight-color: #FF6F00;
-}
-
-[data-theme="dark"] {
-    --bg-color: #121212;
-    --container-bg: #1e1e1e;
-    --text-color: #e0e0e0;
-    --subtitle-color: #aaa;
-    --shadow-color: rgba(0, 0, 0, 0.5);
-    --btn-bg: #FFD54F;
-    --btn-hover: #FFCA28;
-    --btn-text: #3e2723;
-    --highlight-color: #FFAB91;
+    --bg-color: #f7f7f7;
+    --text-color: #535353;
+    --canvas-width: 600px;
+    --canvas-height: 150px;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
     margin: 0;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-.container {
-    text-align: center;
-    background-color: var(--container-bg);
-    padding: 3rem 2rem;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px var(--shadow-color);
-    transition: background-color 0.3s, box-shadow 0.3s;
-    position: relative;
-    max-width: 400px;
-    width: 90%;
-}
-
-.controls {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
+    padding: 0;
+    background-color: var(--bg-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
-    gap: 0.5rem;
-}
-
-.icon-btn {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--text-color);
-    padding: 0.5rem;
-    border-radius: 50%;
-    transition: background-color 0.3s, color 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-}
-
-.icon-btn:hover {
-    background-color: var(--shadow-color);
-}
-
-h1 {
-    margin-bottom: 0.5rem;
-    font-size: 2rem;
-}
-
-.subtitle {
-    color: var(--subtitle-color);
-    margin-bottom: 2rem;
-    font-size: 1rem;
-}
-
-.menu-display {
-    min-height: 250px;
-    display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-bottom: 2rem;
-    border: 2px dashed var(--subtitle-color);
-    border-radius: 10px;
-    padding: 1.5rem;
-    transition: opacity 0.2s ease-in-out;
-    position: relative;
+    height: 100vh;
     overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
-.menu-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
+#game-container {
+    position: relative;
+    width: var(--canvas-width);
+    height: var(--canvas-height);
+}
+
+canvas {
+    display: block;
+    border-bottom: 1px solid var(--text-color);
     width: 100%;
+    height: 100%;
 }
 
-.menu-display img {
-    width: 100%;
-    height: 250px;
-    border-radius: 12px;
-    box-shadow: 0 6px 12px var(--shadow-color);
-    object-fit: cover;
-    opacity: 0;
-    transition: opacity 0.5s ease-in;
-    background-color: var(--shadow-color);
+#game-ui {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    display: none;
 }
 
-.menu-name {
-    font-size: 1.8rem;
-    color: var(--highlight-color);
+#game-ui.visible {
+    display: block;
+}
+
+#game-over-text {
+    font-size: 24px;
+    color: var(--text-color);
+    margin-bottom: 10px;
+    font-family: monospace;
     font-weight: bold;
-    margin-top: 0.5rem;
 }
 
-.placeholder {
-    font-size: 1.2rem;
-    color: var(--subtitle-color);
-    font-weight: normal;
-}
-
-.loading {
-    font-size: 1.2rem;
-    color: var(--highlight-color);
-    font-weight: bold;
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% { opacity: 0.5; }
-    50% { opacity: 1; }
-    100% { opacity: 0.5; }
-}
-
-.ai-badge {
-    font-size: 0.7rem;
-    background-color: #333;
-    color: #FFC107;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    margin-top: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-#recommend-btn {
-    padding: 1rem 2rem;
-    font-size: 1.1rem;
+#restart-btn {
+    background: transparent;
     border: none;
-    border-radius: 50px;
-    background-color: var(--btn-bg);
-    color: var(--btn-text);
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.1s;
-    font-weight: bold;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 0;
 }
 
-#recommend-btn:hover {
-    background-color: var(--btn-hover);
-    transform: translateY(-2px);
-}
-
-#recommend-btn:active {
-    transform: translateY(0);
+/* Simple icon for restart button using CSS to mimic the refresh arrow */
+#restart-btn::after {
+    content: "↻";
+    font-size: 30px;
+    color: var(--text-color);
 }
