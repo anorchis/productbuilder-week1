@@ -6,6 +6,12 @@ const JUMP_STRENGTH = -10;
 const SPEED_INCREMENT = 0.001;
 const INITIAL_SPEED = 5;
 
+// Assets
+const bgImage = new Image();
+bgImage.src = 'background.png';
+const dinoImage = new Image();
+dinoImage.src = 'character.png';
+
 // Game State
 let canvas, ctx;
 let gameSpeed = INITIAL_SPEED;
@@ -14,6 +20,7 @@ let highScore = localStorage.getItem('dinoHighScore') || 0;
 let gameRunning = false;
 let gameOver = false;
 let frameId;
+let bgX = 0; // Background scroll position
 
 // Entities
 let dino = {
@@ -29,9 +36,6 @@ let dino = {
 let obstacles = [];
 let clouds = [];
 
-// Assets (Simple Drawing for now to match strict layout requests)
-// In a real strict clone we'd use sprite sheets, but drawing primitives works for logic.
-
 function init() {
     canvas = document.getElementById('gameCanvas');
     ctx = canvas.getContext('2d');
@@ -44,6 +48,9 @@ function init() {
     canvas.style.width = `${CANVAS_WIDTH}px`;
     canvas.style.height = `${CANVAS_HEIGHT}px`;
 
+    // Disable image smoothing for pixel art look
+    ctx.imageSmoothingEnabled = false;
+
     document.addEventListener('keydown', handleInput);
     document.addEventListener('touchstart', handleInput); // Mobile support
     document.getElementById('restart-btn').addEventListener('click', resetGame);
@@ -51,6 +58,11 @@ function init() {
     resetGame();
     // Don't auto-start, wait for input
     gameRunning = false;
+    
+    // Wait for images to load before initial draw if needed, 
+    // but drawing loop handles it via checks or it just pops in.
+    bgImage.onload = draw;
+    dinoImage.onload = draw;
     draw(); 
 }
 
@@ -59,6 +71,7 @@ function resetGame() {
     score = 0;
     gameRunning = true;
     gameOver = false;
+    bgX = 0;
     
     dino.y = CANVAS_HEIGHT - dino.height;
     dino.dy = 0;
@@ -129,6 +142,13 @@ function update() {
         dino.grounded = true;
     }
 
+    // Scroll Background
+    // Assuming background includes the ground, it moves at gameSpeed
+    bgX -= gameSpeed;
+    if (bgX <= -CANVAS_WIDTH) {
+        bgX = 0;
+    }
+
     // Move Obstacles
     spawnObstacle();
     
@@ -147,11 +167,18 @@ function update() {
 
     // Collision Detection
     for (let obs of obstacles) {
+        // Simple AABB collision
+        // Shrink hitbox slightly for fairer play with sprite
+        const hitX = dino.x + 5;
+        const hitY = dino.y + 5;
+        const hitW = dino.width - 10;
+        const hitH = dino.height - 10;
+
         if (
-            dino.x < obs.x + obs.width &&
-            dino.x + dino.width > obs.x &&
-            dino.y < obs.y + obs.height &&
-            dino.y + dino.height > obs.y
+            hitX < obs.x + obs.width &&
+            hitX + hitW > obs.x &&
+            hitY < obs.y + obs.height &&
+            hitY + hitH > obs.y
         ) {
             handleGameOver();
         }
@@ -161,24 +188,46 @@ function update() {
 }
 
 function draw() {
-    // Background (already set in CSS, but can add clouds here)
-    
-    // Dino (Gray Rectangle for now)
-    ctx.fillStyle = '#535353';
-    ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+    // Draw Background
+    if (bgImage.complete && bgImage.naturalWidth > 0) {
+        // Draw two copies for infinite scrolling
+        ctx.drawImage(bgImage, bgX, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        ctx.drawImage(bgImage, bgX + CANVAS_WIDTH, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    } else {
+        // Fallback
+        ctx.fillStyle = '#f7f7f7';
+        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    }
+
+    // Draw Dino
+    if (dinoImage.complete && dinoImage.naturalWidth > 0) {
+        ctx.drawImage(dinoImage, dino.x, dino.y, dino.width, dino.height);
+    } else {
+         ctx.fillStyle = '#535353';
+         ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+    }
 
     // Obstacles (Cacti)
-    ctx.fillStyle = '#535353';
+    // Use a color that stands out against the new background
+    // Since we don't know the bg color for sure, dark grey is usually safe, 
+    // or maybe a dark green/brown if it's a forest.
+    ctx.fillStyle = '#2c3e50'; 
     obstacles.forEach(obs => {
         ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
     });
 
     // Score
-    ctx.fillStyle = '#535353';
-    ctx.font = '20px monospace';
+    ctx.fillStyle = '#ffffff'; // White text might be better on a colored background
+    ctx.font = 'bold 20px monospace';
+    // Add text shadow for readability
+    ctx.shadowColor = "black";
+    ctx.shadowBlur = 4;
     ctx.textAlign = 'right';
     const scoreText = `HI ${Math.floor(highScore)} ${Math.floor(score).toString().padStart(5, '0')}`;
     ctx.fillText(scoreText, CANVAS_WIDTH - 10, 30);
+    
+    // Reset shadow
+    ctx.shadowBlur = 0;
 }
 
 function handleGameOver() {
@@ -189,7 +238,7 @@ function handleGameOver() {
         localStorage.setItem('dinoHighScore', highScore);
     }
     document.getElementById('game-ui').classList.add('visible');
-    draw(); // Draw one last time to ensure overlapping state is visible
+    draw(); 
 }
 
 // Start

@@ -1,6 +1,6 @@
 :root {
-    --bg-color: #f7f7f7;
-    --text-color: #535353;
+    --bg-color: #202020; /* Darker background to frame the game */
+    --text-color: #ffffff; /* White text for better contrast on images */
     --canvas-width: 600px;
     --canvas-height: 150px;
 }
@@ -23,11 +23,12 @@ body {
     position: relative;
     width: var(--canvas-width);
     height: var(--canvas-height);
+    box-shadow: 0 0 20px rgba(0,0,0,0.5); /* Glow effect */
 }
 
 canvas {
     display: block;
-    border-bottom: 1px solid var(--text-color);
+    /* Border removed to let the image background define the ground */
     width: 100%;
     height: 100%;
 }
@@ -39,6 +40,7 @@ canvas {
     transform: translate(-50%, -50%);
     text-align: center;
     display: none;
+    z-index: 10;
 }
 
 #game-ui.visible {
@@ -51,6 +53,7 @@ canvas {
     margin-bottom: 10px;
     font-family: monospace;
     font-weight: bold;
+    text-shadow: 2px 2px 0 #000; /* Outline for visibility */
 }
 
 #restart-btn {
@@ -65,4 +68,5 @@ canvas {
     content: "↻";
     font-size: 30px;
     color: var(--text-color);
+    text-shadow: 2px 2px 0 #000;
 }
