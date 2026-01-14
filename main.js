@@ -18,6 +18,12 @@ dinoJumpImage.src = 'jump.png';
 const dinoDoubleJumpImage = new Image();
 dinoDoubleJumpImage.src = 'jump2.png';
 
+// Audio Assets
+const bgMusic = new Audio('music.mp3');
+bgMusic.loop = true;
+const jumpSound = new Audio('jump.mp3');
+const gameOverSound = new Audio('over.mp3');
+
 // Obstacle Assets
 const obsCoffeeImg = new Image();
 obsCoffeeImg.src = 'coffee.png';
@@ -112,6 +118,7 @@ function resetGame(start = true) {
     if (frameId) cancelAnimationFrame(frameId);
     
     if (start) {
+        bgMusic.play().catch(e => console.log("Audio play failed:", e));
         update();
     } else {
         draw();
@@ -134,6 +141,7 @@ function handleInput(e) {
 
     if (!gameRunning) {
         gameRunning = true;
+        bgMusic.play().catch(e => console.log("Audio play failed:", e));
         update();
     }
 
@@ -141,9 +149,13 @@ function handleInput(e) {
         dino.dy = JUMP_STRENGTH;
         dino.grounded = false;
         dino.jumpCount = 1;
+        jumpSound.currentTime = 0;
+        jumpSound.play().catch(e => console.log("Jump sound failed:", e));
     } else if (dino.jumpCount === 1) {
         dino.dy = JUMP_STRENGTH * 1.05;
         dino.jumpCount = 2;
+        jumpSound.currentTime = 0;
+        jumpSound.play().catch(e => console.log("Jump sound failed:", e));
     }
 }
 
@@ -322,6 +334,9 @@ function draw() {
 function handleGameOver() {
     gameOver = true;
     gameRunning = false;
+    bgMusic.pause();
+    bgMusic.currentTime = 0;
+    gameOverSound.play().catch(e => console.log("Game over sound failed:", e));
     if (score > highScore) {
         highScore = score;
         localStorage.setItem('dinoHighScore', highScore);
