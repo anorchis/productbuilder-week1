@@ -13,6 +13,8 @@ const bgImage = new Image();
 bgImage.src = 'way.png';
 const dinoRunImage = new Image();
 dinoRunImage.src = 'worker.png';
+const dinoRunImage2 = new Image();
+dinoRunImage2.src = 'worker3.png';
 const dinoJumpImage = new Image();
 dinoJumpImage.src = 'jump.png';
 const dinoDoubleJumpImage = new Image();
@@ -55,6 +57,7 @@ let gameRunning = false;
 let gameOver = false;
 let frameId;
 let bgX = 0;
+let gameFrame = 0;
 
 // Entities
 let dino = {
@@ -207,6 +210,7 @@ function update() {
     
     frameId = requestAnimationFrame(update);
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    gameFrame++;
 
     dino.dy += GRAVITY;
     dino.y += dino.dy;
@@ -282,14 +286,23 @@ function draw() {
 
     let currentDinoImage;
     if (dino.grounded) {
-        currentDinoImage = dinoRunImage;
+        // Animate every 10 frames
+        if (Math.floor(gameFrame / 10) % 2 === 0) {
+            currentDinoImage = dinoRunImage;
+        } else {
+            currentDinoImage = dinoRunImage2;
+        }
     } else {
         currentDinoImage = (dino.jumpCount === 2) ? dinoDoubleJumpImage : dinoJumpImage;
     }
 
-    // Fallback: If custom image not loaded, use standard jump image
+    // Fallback: If custom image not loaded, use standard run/jump image
     if (!currentDinoImage.complete || currentDinoImage.naturalWidth === 0) {
-        currentDinoImage = dinoJumpImage;
+        if (dino.grounded) {
+             currentDinoImage = dinoRunImage;
+        } else {
+             currentDinoImage = dinoJumpImage;
+        }
     }
 
     if (currentDinoImage.complete && currentDinoImage.naturalWidth > 0) {
