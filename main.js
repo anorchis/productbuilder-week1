@@ -19,7 +19,7 @@ const dinoDoubleJumpImage = new Image();
 dinoDoubleJumpImage.src = 'jump2.png';
 
 // Audio Assets
-const bgMusic = new Audio('music.mp3');
+const bgMusic = new Audio('backmusic.mp3');
 bgMusic.loop = true;
 const jumpSound = new Audio('jump.mp3');
 const gameOverSound = new Audio('over.mp3');
