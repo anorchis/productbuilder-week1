@@ -142,7 +142,7 @@ function handleInput(e) {
         dino.grounded = false;
         dino.jumpCount = 1;
     } else if (dino.jumpCount === 1) {
-        dino.dy = JUMP_STRENGTH * 1.2;
+        dino.dy = JUMP_STRENGTH * 1.05;
         dino.jumpCount = 2;
     }
 }
