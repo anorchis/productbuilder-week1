@@ -185,9 +185,9 @@ function spawnObstacle() {
             type = 'board';
             img = obsBoardImg;
             // Original: 356x498. Aspect Ratio ~0.71 (W/H)
-            // Scaling to 100px height
-            w = 71; 
-            h = 100; 
+            // Scaling to 130px height
+            w = 93; 
+            h = 130; 
             offset = SIDEWALK_OFFSET; // Move to sidewalk
         }
 
