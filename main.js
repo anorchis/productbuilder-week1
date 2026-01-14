@@ -176,7 +176,7 @@ function spawnObstacle() {
             // Scaling to match character height (~136px) roughly
             w = 107; 
             h = 150; 
-            offset = ROAD_OFFSET; // Stays on the road
+            offset = SIDEWALK_OFFSET; // Move to sidewalk
         }
 
         obstacles.push({
