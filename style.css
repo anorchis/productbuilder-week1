@@ -38,13 +38,13 @@ header h1 {
 
 #game-container {
     position: relative;
-    width: var(--canvas-width);
-    height: var(--canvas-height);
+    width: 100%;
+    max-width: var(--canvas-width);
+    max-height: 60vh; /* Limit height to 60% of viewport height to fit on landscape */
+    aspect-ratio: 1024 / 434;
     box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    /* Ensure it scales down on smaller screens */
-    max-width: 100%;
-    /* Remove max-height constraint to flow naturally with content */
-    margin-bottom: 40px;
+    margin: 0 auto 40px auto; /* Center horizontally */
+    background-color: #000; /* Fallback/Loading bg */
 }
 
 .content-section {

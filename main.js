@@ -5,8 +5,8 @@ const CANVAS_HEIGHT = 434;
 // Physics adjustments
 const GRAVITY = 0.8; 
 const JUMP_STRENGTH = -15; 
-const SPEED_INCREMENT = 0.005;
-const INITIAL_SPEED = 8;
+const SPEED_INCREMENT = 0.001;
+const INITIAL_SPEED = 6;
 
 // Assets
 const bgImage = new Image();
@@ -15,6 +15,8 @@ const dinoRunImage = new Image();
 dinoRunImage.src = 'worker.png';
 const dinoJumpImage = new Image();
 dinoJumpImage.src = 'jump.png';
+const dinoDoubleJumpImage = new Image();
+dinoDoubleJumpImage.src = 'jump2.png';
 
 // Obstacle Assets
 const obsCoffeeImg = new Image();
@@ -55,7 +57,8 @@ let dino = {
     width: 203,
     height: 136,
     dy: 0,
-    grounded: true
+    grounded: true,
+    jumpCount: 0
 };
 
 // Offset for sidewalk (Worker, Coffee, Pigeon)
@@ -74,8 +77,7 @@ function init() {
     canvas.height = CANVAS_HEIGHT * dpr;
     ctx.scale(dpr, dpr);
     
-    canvas.style.width = `${CANVAS_WIDTH}px`;
-    canvas.style.height = `${CANVAS_HEIGHT}px`;
+    // canvas.style.width and height are handled by CSS for responsiveness
 
     ctx.imageSmoothingEnabled = false;
 
@@ -101,6 +103,8 @@ function resetGame(start = true) {
     // Worker is on the sidewalk
     dino.y = CANVAS_HEIGHT - dino.height - SIDEWALK_OFFSET;
     dino.dy = 0;
+    dino.grounded = true;
+    dino.jumpCount = 0;
     obstacles = [];
 
     document.getElementById('game-ui').classList.remove('visible');
@@ -136,6 +140,10 @@ function handleInput(e) {
     if (dino.grounded) {
         dino.dy = JUMP_STRENGTH;
         dino.grounded = false;
+        dino.jumpCount = 1;
+    } else if (dino.jumpCount === 1) {
+        dino.dy = JUMP_STRENGTH * 1.2;
+        dino.jumpCount = 2;
     }
 }
 
@@ -196,11 +204,12 @@ function update() {
         dino.y = groundY;
         dino.dy = 0;
         dino.grounded = true;
+        dino.jumpCount = 0;
     }
 
     bgX -= gameSpeed;
     if (bgX <= -CANVAS_WIDTH) {
-        bgX = 0;
+        bgX += CANVAS_WIDTH;
     }
 
     spawnObstacle();
@@ -259,7 +268,18 @@ function draw() {
         ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     }
 
-    let currentDinoImage = dino.grounded ? dinoRunImage : dinoJumpImage;
+    let currentDinoImage;
+    if (dino.grounded) {
+        currentDinoImage = dinoRunImage;
+    } else {
+        currentDinoImage = (dino.jumpCount === 2) ? dinoDoubleJumpImage : dinoJumpImage;
+    }
+
+    // Fallback: If custom image not loaded, use standard jump image
+    if (!currentDinoImage.complete || currentDinoImage.naturalWidth === 0) {
+        currentDinoImage = dinoJumpImage;
+    }
+
     if (currentDinoImage.complete && currentDinoImage.naturalWidth > 0) {
         ctx.drawImage(currentDinoImage, dino.x, dino.y, dino.width, dino.height);
     }

@@ -24,6 +24,7 @@ A web-based clone of the famous Chrome "No Internet" Dinosaur game. The applicat
 6.  **Adjustments**:
     -   Moved character and pigeon slightly up (SIDEWALK_OFFSET adjusted to 130).
     -   User requested `board.png` replacement.
+    -   Reverted game speed: `INITIAL_SPEED` to 6, `SPEED_INCREMENT` to 0.001 (User feedback: too fast).
 
 ## Future Steps
 -   Upgrade graphics to "prettier pixel art".
