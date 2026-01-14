@@ -4,7 +4,7 @@ const CANVAS_HEIGHT = 434;
 
 // Physics adjustments
 const GRAVITY = 0.8; 
-const JUMP_STRENGTH = -15; 
+const JUMP_STRENGTH = -18; 
 const SPEED_INCREMENT = 0.001;
 const INITIAL_SPEED = 6;
 
@@ -172,10 +172,10 @@ function spawnObstacle() {
         } else {
             type = 'board';
             img = obsBoardImg;
-            // Original: 356x498. Aspect Ratio ~1.4
-            // Scaling to match character height (~136px) roughly
-            w = 107; 
-            h = 150; 
+            // Original: 356x498. Aspect Ratio ~0.71 (W/H)
+            // Scaling to 180px height
+            w = 129; 
+            h = 180; 
             offset = SIDEWALK_OFFSET; // Move to sidewalk
         }
 
