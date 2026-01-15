@@ -10,7 +10,13 @@ A web-based clone of the famous Chrome "No Internet" Dinosaur game. The applicat
 - **Scoring**: Score increases with distance. High score tracking (local storage).
 - **Game Over**: Collision detection ends the game with a restart option.
 
-## Current Plan (Step 1: Classic Clone)
+
+## Current Plan: Adjust Gameplay Physics
+- **Goal**: Fine-tune the game physics for better playability.
+- **Changes**:
+    -   Reduce `JUMP_STRENGTH` from -20 to -19.
+    -   Increase `SPEED_INCREMENT` to double its current value (from 0.001 to 0.002) to make the game speed up faster.
+
 1.  **Reset Project**: Clear existing web files.
 2.  **HTML Structure**: Setup a `canvas` element for the game.
 3.  **CSS Styling**: Mimic the "offline" page aesthetic (font, background color).
@@ -25,6 +31,7 @@ A web-based clone of the famous Chrome "No Internet" Dinosaur game. The applicat
     -   Moved character and pigeon slightly up (SIDEWALK_OFFSET adjusted to 130).
     -   User requested `board.png` replacement.
     -   Reverted game speed: `INITIAL_SPEED` to 6, `SPEED_INCREMENT` to 0.001 (User feedback: too fast).
+    -   Updated physics: `JUMP_STRENGTH` to -19, `SPEED_INCREMENT` to 0.002.
 
 ## Future Steps
 -   Upgrade graphics to "prettier pixel art".

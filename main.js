@@ -4,17 +4,19 @@ const CANVAS_HEIGHT = 434;
 
 // Physics adjustments
 const GRAVITY = 0.8; 
-const JUMP_STRENGTH = -20; 
-const SPEED_INCREMENT = 0.001;
+const JUMP_STRENGTH = -18; 
+const SPEED_INCREMENT = 0.003;
 const INITIAL_SPEED = 6;
 
 // Assets
 const bgImage = new Image();
 bgImage.src = 'way.png';
 const dinoRunImage = new Image();
-dinoRunImage.src = 'worker.png';
+dinoRunImage.src = 'move.jpg';
 const dinoRunImage2 = new Image();
-dinoRunImage2.src = 'worker3.png';
+dinoRunImage2.src = 'move2.jpg';
+const dinoRunImage3 = new Image();
+dinoRunImage3.src = 'move3.jpg';
 const dinoJumpImage = new Image();
 dinoJumpImage.src = 'jump.png';
 const dinoDoubleJumpImage = new Image();
@@ -63,15 +65,15 @@ let gameFrame = 0;
 let dino = {
     x: 50,
     y: 0,
-    width: 203,
-    height: 136,
+    width: 100,
+    height: 100,
     dy: 0,
     grounded: true,
     jumpCount: 0
 };
 
 // Offset for sidewalk (Worker, Coffee, Pigeon)
-const SIDEWALK_OFFSET = 90; 
+const SIDEWALK_OFFSET = 100; 
 // Offset for road (Scooter/Board)
 const ROAD_OFFSET = 20;
 
@@ -99,6 +101,8 @@ function init() {
     
     bgImage.onload = draw;
     dinoRunImage.onload = draw;
+    dinoRunImage2.onload = draw;
+    dinoRunImage3.onload = draw;
     requestAnimationFrame(draw); 
 }
 
@@ -175,23 +179,23 @@ function spawnObstacle() {
         if (rand < 0.33) {
             type = 'coffee';
             img = obsCoffeeImg;
-            w = 120;
-            h = 51; 
-            offset = 80;
+            w = 87;
+            h = 40; 
+            offset = 85;
         } else if (rand < 0.66) {
             type = 'pigeon';
             img = obsPigeonImg;
             w = 100;
             h = 48; 
-            offset = SIDEWALK_OFFSET;
+            offset = 94;
         } else {
             type = 'board';
             img = obsBoardImg;
             // Original: 356x498. Aspect Ratio ~0.71 (W/H)
             // Scaling to 130px height
-            w = 93; 
-            h = 130; 
-            offset = SIDEWALK_OFFSET; // Move to sidewalk
+            w = 88; 
+            h = 129; 
+            offset = 94; // Move to sidewalk
         }
 
         obstacles.push({
@@ -287,10 +291,14 @@ function draw() {
     let currentDinoImage;
     if (dino.grounded) {
         // Animate every 10 frames
-        if (Math.floor(gameFrame / 10) % 2 === 0) {
-            currentDinoImage = dinoRunImage;
+        let frameIndex = Math.floor(gameFrame / 10) % 3; 
+        
+        if (frameIndex === 0) {
+            currentDinoImage = dinoRunImage;  // worker
+        } else if (frameIndex === 1) {
+            currentDinoImage = dinoRunImage2; // worker3 (또는 worker2)
         } else {
-            currentDinoImage = dinoRunImage2;
+            currentDinoImage = dinoRunImage3; // worker5
         }
     } else {
         currentDinoImage = (dino.jumpCount === 2) ? dinoDoubleJumpImage : dinoJumpImage;
