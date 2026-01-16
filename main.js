@@ -161,12 +161,12 @@ function handleInput(e) {
         jumpSound.currentTime = 0;
         jumpSound.play().catch(e => console.log("Jump sound failed:", e));
     } else if (dino.jumpCount === 1) {
-        dino.dy = JUMP_STRENGTH * 0.9;
+        dino.dy = JUMP_STRENGTH * 0.8;
         dino.jumpCount = 2;
         jumpSound.currentTime = 0;
         jumpSound.play().catch(e => console.log("Jump sound failed:", e));
     } else if (dino.jumpCount === 2) {
-        dino.dy = JUMP_STRENGTH * 0.8; // 3단 점프 높이를 조절하려면 이 값을 변경하세요.
+        dino.dy = JUMP_STRENGTH * 0.6; // 3단 점프 높이를 조절하려면 이 값을 변경하세요.
         dino.jumpCount = 3;
         jumpSound.currentTime = 0;
         jumpSound.play().catch(e => console.log("Jump sound failed:", e));
