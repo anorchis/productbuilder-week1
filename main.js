@@ -21,6 +21,8 @@ const dinoJumpImage = new Image();
 dinoJumpImage.src = 'jump.png';
 const dinoDoubleJumpImage = new Image();
 dinoDoubleJumpImage.src = 'jump2.png';
+const dinoTripleJumpImage = new Image();
+dinoTripleJumpImage.src = 'jump3.png';
 
 // Audio Assets
 const bgMusic = new Audio('backmusic.mp3');
@@ -159,11 +161,17 @@ function handleInput(e) {
         jumpSound.currentTime = 0;
         jumpSound.play().catch(e => console.log("Jump sound failed:", e));
     } else if (dino.jumpCount === 1) {
-        dino.dy = JUMP_STRENGTH * 1.05;
+        dino.dy = JUMP_STRENGTH * 0.9;
         dino.jumpCount = 2;
         jumpSound.currentTime = 0;
         jumpSound.play().catch(e => console.log("Jump sound failed:", e));
+    } else if (dino.jumpCount === 2) {
+        dino.dy = JUMP_STRENGTH * 0.8; // 3단 점프 높이를 조절하려면 이 값을 변경하세요.
+        dino.jumpCount = 3;
+        jumpSound.currentTime = 0;
+        jumpSound.play().catch(e => console.log("Jump sound failed:", e));
     }
+    
 }
 
 function spawnObstacle() {
@@ -301,7 +309,13 @@ function draw() {
             currentDinoImage = dinoRunImage3; // worker5
         }
     } else {
-        currentDinoImage = (dino.jumpCount === 2) ? dinoDoubleJumpImage : dinoJumpImage;
+        if (dino.jumpCount === 1) {
+            currentDinoImage = dinoJumpImage;
+        } else if (dino.jumpCount === 2) {
+            currentDinoImage = dinoDoubleJumpImage;
+        } else if (dino.jumpCount === 3) {
+            currentDinoImage = dinoTripleJumpImage; // 3단 점프 이미지 변수 사용
+        }
     }
 
     // Fallback: If custom image not loaded, use standard run/jump image
