@@ -11,11 +11,10 @@ A web-based clone of the famous Chrome "No Internet" Dinosaur game. The applicat
 - **Game Over**: Collision detection ends the game with a restart option.
 
 
-## Current Plan: Adjust Gameplay Physics
-- **Goal**: Fine-tune the game physics for better playability.
+## Current Plan: Add Google Analytics
+- **Goal**: Add Google Analytics tracking to all HTML pages.
 - **Changes**:
-    -   Reduce `JUMP_STRENGTH` from -20 to -19.
-    -   Increase `SPEED_INCREMENT` to double its current value (from 0.001 to 0.002) to make the game speed up faster.
+    -   Insert Google Analytics tag (G-ZXN4W3MX9X) into `<head>` of `index.html` and `privacy.html`.
 
 1.  **Reset Project**: Clear existing web files.
 2.  **HTML Structure**: Setup a `canvas` element for the game.
