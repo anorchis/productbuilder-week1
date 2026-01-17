@@ -11,10 +11,11 @@ A web-based clone of the famous Chrome "No Internet" Dinosaur game. The applicat
 - **Game Over**: Collision detection ends the game with a restart option.
 
 
-## Current Plan: Add Google Analytics
-- **Goal**: Add Google Analytics tracking to all HTML pages.
+## Current Plan: Add Google Analytics and Microsoft Clarity
+- **Goal**: Add Google Analytics and Microsoft Clarity tracking to all HTML pages.
 - **Changes**:
     -   Insert Google Analytics tag (G-7372DL9XT2) into `<head>` of `index.html` and `privacy.html`.
+    -   Insert Microsoft Clarity tracking code (v2q2oqdk5w) into `<head>` of `index.html` and `privacy.html`.
 
 1.  **Reset Project**: Clear existing web files.
 2.  **HTML Structure**: Setup a `canvas` element for the game.
