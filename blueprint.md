@@ -32,6 +32,7 @@ A web-based clone of the famous Chrome "No Internet" Dinosaur game. The applicat
     -   User requested `board.png` replacement.
     -   Reverted game speed: `INITIAL_SPEED` to 6, `SPEED_INCREMENT` to 0.001 (User feedback: too fast).
     -   Updated physics: `JUMP_STRENGTH` to -19, `SPEED_INCREMENT` to 0.002.
+    -   Added custom SVG favicon (`favicon.svg`) depicting a pixel-art coffee cup.
 
 ## Future Steps
 -   Upgrade graphics to "prettier pixel art".
