@@ -143,3 +143,9 @@ canvas {
     margin: 20px auto;
     /* Removed fixed positioning to place below game */
 }
+
+/* Force Userback widget visibility on mobile */
+.userback-button-container,
+.userback-controls {
+    display: block !important;
+}

@@ -20,6 +20,9 @@
     <script>
       window.Userback = window.Userback || {};
       Userback.access_token = "A-jaLpJAZIGLXLjGutbl0SEIbXm";
+      Userback.on_load = function() {
+        Userback.showLauncher();
+      };
       (function(d) {
         var s = d.createElement('script');s.async = true;s.src = 'https://static.userback.io/widget/v1.js';(d.head || d.body).appendChild(s);
       })(document);
@@ -90,11 +93,8 @@
         <a class="a2a_button_reddit"></a>
         <a class="a2a_button_linkedin"></a>
         <a class="a2a_button_whatsapp"></a>
-        <a class="a2a_button_telegram"></a>
-        <a class="a2a_button_line"></a>
         <a class="a2a_button_email"></a>
         <a class="a2a_button_sms"></a>
-        <a class="a2a_button_facebook_messenger"></a>
         <a class="a2a_button_copy_link"></a>
     </div>
     <script defer src="https://static.addtoany.com/menu/page.js"></script>

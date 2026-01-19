@@ -11,7 +11,13 @@ A web-based clone of the famous Chrome "No Internet" Dinosaur game. The applicat
 - **Game Over**: Collision detection ends the game with a restart option.
 
 
-## Current Plan: Add Google Analytics and Microsoft Clarity
+## Current Plan: Fix Userback Mobile Visibility
+- **Goal**: Ensure the Userback feedback widget appears on mobile devices.
+- **Changes**:
+    -   Modified `index.html` and `privacy.html` to add `Userback.on_load` handler calling `Userback.showLauncher()`.
+    -   Updated `style.css` to force visibility of `.userback-button-container` and `.userback-controls`.
+
+## Previous Plan: Add Google Analytics and Microsoft Clarity
 - **Goal**: Add Google Analytics and Microsoft Clarity tracking to all HTML pages.
 - **Changes**:
     -   Insert Google Analytics tag (G-7372DL9XT2) into `<head>` of `index.html` and `privacy.html`.
