@@ -134,3 +134,30 @@ canvas {
     color: var(--text-color);
     text-shadow: 4px 4px 0 #000;
 }
+
+/* Social Share Buttons */
+.share-buttons {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping if screen is too small */
+    justify-content: flex-end;
+    gap: 5px;
+    max-width: 300px; /* Limit width on smaller screens */
+}
+
+/* Adjust for smaller screens */
+@media (max-width: 600px) {
+    .share-buttons {
+        top: 10px;
+        right: 10px;
+        padding: 5px;
+        max-width: 40px; /* Stack vertically on very small screens */
+        flex-direction: column;
+    }
+}
